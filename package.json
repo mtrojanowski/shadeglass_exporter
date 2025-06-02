@@ -1,0 +1,13 @@
+{
+  "name": "shadeglass-importer",
+  "version": "1.0.0",
+  "description": "Process data from a shadedglass tournament and turn it into a CSV that can be useed with the stats project.",
+  "main": "index.js",
+  "scripts": {
+    "process": "node index.js",
+    "process-bcp": "node bcp.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michał Trojanowski",
+  "license": "Apache-2.0"
+}
