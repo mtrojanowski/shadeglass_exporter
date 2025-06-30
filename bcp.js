@@ -11,7 +11,6 @@ const token = ''
  * "<userId>": { "deck1": "", "deck2": "" }
  */
 const parsedDecklists = {
-
 }
 
 
@@ -19,6 +18,9 @@ const parsedDecklists = {
 const bcpBaseUrl = 'https://newprod-api.bestcoastpairings.com/v1/pairings?limit=500&eventId='
 const bcpResultsQuery = '&pairingType=Pairing&expand%5B%5D=player1&expand%5B%5D=player2&expand%5B%5D=player1Game&expand%5B%5D=player2Game'
 const bcpDecklistBaseUrl = 'https://newprod-api.bestcoastpairings.com/v1/armylists/'
+
+const bcpPlacingsBaseUrl = 'https://newprod-api.bestcoastpairings.com/v1/events/'
+const bcpPlacingsQuery = '/players?placings=true'
 
 const deckMap = {
     'CC': 'Countdown to Cataclysm',
@@ -28,6 +30,7 @@ const deckMap = {
     'WR': 'Wrack and Ruin',
     'EK': 'Edge of the Knife',
     'RF': 'Reckless Fury',
+    'RS': 'Realmstone Raiders'
 }
 
 // 'Countdown to Cataclysm', 'Pillage and Plunder', 'Blazing Assault', 'Emberstone Sentinels', 'Wrack and Ruin',  'Edge of the Knife', 'Reckless Fury'
@@ -61,7 +64,7 @@ const bcpFactionMap = {
     "The Wurmspat": 'Wurmspat',
     "Morgok’s Krushas": "Morgok's Krushas",
     "Morgwaeth’s Blade-coven": 'Morgwaeth’s Blade coven',
-    "Myari's Purifiers": 'Myari’s Purifiers ',
+    "Myari's Purifiers": "Myari's Purifiers",
     "The Dread Pageant": 'Dread Pageant',
     "Khagra's Ravagers": "Khagra's Ravagers",
     "Starblood Stalkers": 'Starblood Stalkers',
@@ -100,11 +103,13 @@ const bcpFactionMap = {
     "Zikkit's Tunnelpack": "Zikkit's Tunnelpack",
     "Grandfather's Gardeners": "Grandfather's Gardeners",
     "Jaws of Itzl": 'Jaws of Itzl',
-    "Borgit's Beastgrabbaz": "Borgit's Beastgrabbaz"
+    "Borgit's Beastgrabbaz": "Borgit's Beastgrabbaz",
+    'Knives of the Crone': 'Knives of the Crone',
 }
 
 
 let bcpAPICallCount = 0;
+const playersAndDecks = []
 
 async function callBCP(url) {
 
@@ -148,6 +153,11 @@ async function fetchBCPDeckList(deckListId) {
     return await callBCP(url)
 }
 
+async function fetchBCPPlacings() {
+    const url = bcpPlacingsBaseUrl + eventId + bcpPlacingsQuery
+    return await callBCP(url)
+}
+
 function parseDecks(deckUrl) {
     // from the deckUrl, which is a URL, get the `deck` query paramameter, then split the value by `,` and save it in a variable called cards
     const cards = deckUrl.split('?deck=')[1].split(',');
@@ -177,7 +187,7 @@ async function getDecks(playerId, decklistId) {
         return parsed
     }
 
-    const emptyDeckList = {deck1: "-", deck2: "-"}
+    const emptyDeckList = {deck1: "-", deck2: "-", deckUrl: ""}
 
     if (decklistId === undefined) {
         console.log('No decklist ID for player ' + playerId);
@@ -196,10 +206,14 @@ async function getDecks(playerId, decklistId) {
         return emptyDeckList
     }
 
-
     if (decklistText.includes("underworldsdb.com")) {
+        const urlMatch = decklistText.match(/https?:\/\/[^\s]+/);
+        const deckUrl = urlMatch ? urlMatch[0] : '';
+
         const decks = parseDecks(decklistText)
         const parsed = { deck1: deckMap[decks[0]], deck2: deckMap[decks[1]] }
+        parsed['deckUrl'] = deckUrl
+
         parsedDecklists[playerId] = parsed
         return parsed
     }
@@ -270,4 +284,26 @@ async function processResult() {
     }
 }
 
-processResult()
+async function printPlacings() {
+    const placings = await fetchBCPPlacings()
+
+    // iterate over placings.active
+    for (const placing of placings['active']) {
+        if (placing['faction'] === undefined) {
+            console.log('Undefined faction for a placing: ' + JSON.stringify(placing));
+            continue;
+        }
+
+        const playerId = placing['userId']
+        const playerFaction = bcpFactionMap[placing['faction']['name']]
+        const playerDecks = await getDecks(playerId, placing['listId'])
+
+        playersAndDecks.push([placing['placing'], playerFaction, playerDecks['deck1'], playerDecks['deck2'], playerDecks['deckUrl']])
+    }
+
+    console.log(JSON.stringify(playersAndDecks))
+}
+
+await processResult()
+
+// await printPlacings()
