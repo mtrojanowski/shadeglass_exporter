@@ -27,6 +27,7 @@ const bcpDecklistBaseUrl = 'https://newprod-api.bestcoastpairings.com/v1/armylis
 const bcpPlacingsBaseUrl = 'https://newprod-api.bestcoastpairings.com/v1/events/'
 const bcpPlacingsQuery = '/players?placings=true'
 
+// These are the abbreviations used by underworldsdb in their deck sharing URL
 const deckMap = {
     'CC': 'Countdown to Cataclysm',
     'PL': 'Pillage and Plunder',
@@ -35,21 +36,20 @@ const deckMap = {
     'WR': 'Wrack and Ruin',
     'EK': 'Edge of the Knife',
     'RF': 'Reckless Fury',
-    'RS': 'Realmstone Raiders'
+    'RS': 'Realmstone Raiders',
+    'RG': 'Raging Slayers'
 }
 
-// 'Countdown to Cataclysm', 'Pillage and Plunder', 'Blazing Assault', 'Emberstone Sentinels', 'Wrack and Ruin',  'Edge of the Knife', 'Reckless Fury'
-
 const bcpFactionMap = {
-    "Steelheart's Champions": 'Steelheart’s Champions',
-    "Garrek's Reavers": 'Garrek’s Reavers',
+    "Steelheart's Champions": "Steelheart's Champions",
+    "Garrek's Reavers": "Garrek's Reavers",
     "Ironskulls Boyz": "Ironskull's Boyz",
     'The Sepulchral Guard': 'Sepulchral Guard',
     'The Chosen Axes': 'Chosen Axes',
     "Spiteclaw's Swarm": "Spiteclaw's Swarm",
     "Magore’s Fiends": "Magore's Fiends",
     "The Farstriders": 'Farstriders',
-    "Stormsire's Cursebreakers": 'Stormsire’s Cursebreakers',
+    "Stormsire's Cursebreakers": "Stormsire's Cursebreakers",
     "Thorns of the Briar Queen": 'Thorns of the Briar Queen',
     "Zarbag’s Gitz": "Zarbag's Gitz",
     "Eyes of the Nine": 'Eyes of the Nine',
@@ -57,18 +57,18 @@ const bcpFactionMap = {
     "Godsworn's Hunt": 'Godsworn Hunt',
     "The Godsworn Hunt": 'Godsworn Hunt',
     "Mollog's Mob": "Mollog's Mob",
-    "Ylthari’s Guardians": 'Ylthari’s Guardians',
+    "Ylthari’s Guardians": "Ylthari's Guardians",
     "Thundrik’s Profiteers": "Thundrik's Profiteers",
-    "Grashrak’s Despoilers": 'Grashrak’s Despoilers',
-    "Skaeth’s Wild Hunt": 'Skaeth’s Wild Hunt',
+    "Grashrak’s Despoilers": "Grashrak's Despoilers",
+    "Skaeth’s Wild Hunt": "Skaeth's Wild Hunt",
     "Ironsoul’s Condemnors": "Ironsoul's Condemners",
     "Lady Harrow’s Mournflight": "Lady Harrow's Mournflight",
     "The Grymwatch": 'Grymwatch',
-    "Rippa's Snarlfangs": 'Rippa’s Snarlfangs',
+    "Rippa's Snarlfangs": "Rippa's Snarlfangs",
     "Hrothgorn's Mantrappers": "Hrothgorn's Mantrappers",
     "The Wurmspat": 'Wurmspat',
     "Morgok’s Krushas": "Morgok's Krushas",
-    "Morgwaeth’s Blade-coven": 'Morgwaeth’s Blade coven',
+    "Morgwaeth’s Blade-coven": "Morgwaeth's Blade coven",
     "Myari's Purifiers": "Myari's Purifiers",
     "The Dread Pageant": 'Dread Pageant',
     "Khagra's Ravagers": "Khagra's Ravagers",
@@ -110,6 +110,7 @@ const bcpFactionMap = {
     "Jaws of Itzl": 'Jaws of Itzl',
     "Borgit's Beastgrabbaz": "Borgit's Beastgrabbaz",
     'Knives of the Crone': 'Knives of the Crone',
+    "Kamandora's Blades": "Kamandora's Blades"
 }
 
 
