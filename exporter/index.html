@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WHU Data Exporter</title>
+    <script src="consts.js"></script>
+    <script src="index.js"></script>
+</head>
+<body>
+<h1>WHU Data Exporter</h1>
+<p>Export tournament data from popular TO apps to WHU Statistics data format.</p>
+<form>
+    <div>
+        <label for="token">BCP access token</label>
+        <input type="text" id="token" />
+    </div>
+    <div>
+        <label for="tournament">Input public URL for the tournament, or tournament ID</label>
+        <input type="text" id="tournament" />
+    </div>
+    <div>
+        <button type="button" onclick="processData()">Process</button>
+    </div>
+</form>
+<div id="invalidateCache" style="display: none">
+    <button id="invalidateCacheButton" onclick="invalidateCacheForCurrentEvent()">Refresh event data</button>
+</div>
+<div>
+    <table id="playersTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Faction</th>
+                <th>Decklist URL</th>
+                <th>Decks</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+
+<div id="continueProcessing" style="display: none">
+    <button onclick="continueProcessing()">Continue</button>
+
+    <div>
+        <label for="result">Result:</label>
+        <textarea id="result">
+
+        </textarea>
+    </div>
+</div>
+
+</body>
+</html>
