@@ -5,7 +5,7 @@ body {
     padding: 0;
 }
 .container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 40px auto;
     background: #fff;
     border-radius: 8px;
@@ -75,7 +75,7 @@ select {
 }
 textarea {
     width: 100%;
-    min-height: 80px;
+    min-height: 320px;
     border-radius: 4px;
     border: 1px solid #cfd8dc;
     padding: 8px;
@@ -98,4 +98,10 @@ textarea {
     background: #e8f0fe;
     border-radius: 4px;
 }
+.attention-row {
+    background: #fffbe6 !important;
+}
 
+.results {
+    margin-top: 1em;
+}

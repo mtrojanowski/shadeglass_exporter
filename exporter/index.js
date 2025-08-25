@@ -61,7 +61,14 @@ async function getDeckData(decklistId) {
         const deckUrl = urlMatch ? urlMatch[0] : '';
 
         const decks = parseDecks(decklistText)
-        return { deck1: deckMap[decks[0]], deck2: deckMap[decks[1]] }
+
+        if (decks.length === 2) {
+            return { deck1: deckMap[decks[0]], deck2: deckMap[decks[1]] }
+        } else if (decks.length === 1) {
+            return { deck1: deckMap[decks[0]], deck2: 'Rivals' }
+        } else {
+            return emptyDeckList
+        }
     }
 
     // Try to get the decks from the text itself
@@ -95,10 +102,10 @@ async function getPlayersData(tournamentId) {
 
     for (const player of players.data) {
         processedPlayers[player.id] = {
-            id: player.id, // FIXME - it might require player.user.id
+            id: player.id,
             name: `${player.user.firstName} ${player.user.lastName}`,
             faction: bcpFactionMap[player.faction.name], // TODO handle missing faction?
-            listUrl: player.listUrl, // Todo handle missing list?
+            listUrl: player.listUrl,
             decks: await getDeckData(player.listId)
         };
     }
@@ -115,6 +122,12 @@ function printPlayersTable(players) {
         const player = players[playerId];
         const row = tbody.insertRow();
         row.setAttribute('data-player-id', playerId);
+
+        // Highlight row if missing data
+        if (!player.faction || !player.listUrl || player.decks.deck1 === '-') {
+            row.classList.add('attention-row');
+        }
+
         // Check if this row is in edit mode
         if (player.editMode) {
             // Name cell (not editable)
@@ -265,12 +278,15 @@ async function processData() {
 
     const url = document.getElementById('tournament').value;
 
-    const urlObj = new URL(url);
-    const pathSegments = urlObj.pathname.split('/');
-    const tournamentId = pathSegments[pathSegments.length - 1];
-    eventId = tournamentId;
+    try {
+        const parsedUrl = new URL(url);
+        const pathSegments = parsedUrl.pathname.split('/');
+        eventId = pathSegments.pop() || pathSegments.pop(); // handle potential trailing slash
+    } catch (e) {
+        eventId = url;
+    }
 
-    console.log(`Start processing for tournament ID ${tournamentId}`);
+    console.log(`Start processing for tournament ID ${eventId}`);
 
     const eventPlayersFromCache = readCache(eventId);
 
@@ -284,6 +300,7 @@ async function processData() {
 
     printPlayersTable(eventPlayers);
 
+    document.getElementById('result').value = '';
     document.getElementById('continueProcessing').style.display = 'block';
 }
 
@@ -320,6 +337,7 @@ function updateCache(eventId, eventData) {
 async function invalidateCacheForCurrentEvent() {
     eventPlayers = await getPlayersData(eventId);
     updateCache(eventId, eventPlayers);
+    printPlayersTable(eventPlayers);
 }
 
 function readCache(eventId) {
