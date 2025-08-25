@@ -1,0 +1,122 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f7f7fa;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 32px 24px 24px 24px;
+}
+h1, h2 {
+    color: #2d3a4a;
+}
+label {
+    font-weight: 500;
+    color: #2d3a4a;
+}
+input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #cfd8dc;
+    border-radius: 4px;
+    font-size: 1em;
+    margin-top: 4px;
+    margin-bottom: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+button {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #2563eb;
+}
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #fff;
+}
+th, td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e0e7ef;
+    text-align: left;
+}
+th {
+    background: #f1f5fa;
+    color: #2d3a4a;
+    font-weight: 600;
+}
+tr:last-child td {
+    border-bottom: none;
+}
+tr:nth-child(even) {
+    background: #f8fafc;
+}
+tr:hover {
+    background: #e8f0fe;
+}
+select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #cfd8dc;
+    font-size: 1em;
+}
+textarea {
+    width: 100%;
+    min-height: 320px;
+    border-radius: 4px;
+    border: 1px solid #cfd8dc;
+    padding: 8px;
+    font-size: 1em;
+    margin-top: 4px;
+}
+#invalidateCache, #continueProcessing {
+    margin-top: 24px;
+}
+.icon-btn {
+    background: none;
+    border: none;
+    padding: 0 6px;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: #3b82f6;
+}
+.icon-btn:hover {
+    color: #2563eb;
+    background: #e8f0fe;
+    border-radius: 4px;
+}
+.attention-row {
+    background: #fffbe6 !important;
+}
+
+.results {
+    margin-top: 1em;
+}
+.loader {
+    display: none;
+    vertical-align: middle;
+    min-width: 22px;
+    min-height: 22px;
+    font-size: 1.3em;
+    font-family: monospace;
+    color: #888;
+    margin-left: 8px;
+    letter-spacing: 2px;
+}
