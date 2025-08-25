@@ -42,6 +42,10 @@ button {
 button:hover {
     background: #2563eb;
 }
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
 table {
     width: 100%;
     border-collapse: collapse;
@@ -104,4 +108,15 @@ textarea {
 
 .results {
     margin-top: 1em;
+}
+.loader {
+    display: none;
+    vertical-align: middle;
+    min-width: 22px;
+    min-height: 22px;
+    font-size: 1.3em;
+    font-family: monospace;
+    color: #888;
+    margin-left: 8px;
+    letter-spacing: 2px;
 }

@@ -21,11 +21,13 @@
         <input type="text" id="tournament" />
     </div>
     <div>
-        <button type="button" onclick="processData()">Process</button>
+        <button type="button" onclick="withLoader(this, processData)()">Process</button>
+        <span class="loader">.</span>
     </div>
 </form>
 <div id="invalidateCache" style="display: none">
-    <button id="invalidateCacheButton" onclick="invalidateCacheForCurrentEvent()">Refresh event data</button>
+    <button id="invalidateCacheButton" onclick="withLoader(this, invalidateCacheForCurrentEvent)()">Refresh event data</button>
+    <span class="loader">.</span>
 </div>
 <div>
     <table id="playersTable">
@@ -45,7 +47,8 @@
 </div>
 
 <div id="continueProcessing" style="display: none">
-    <button onclick="continueProcessing()">Continue</button>
+    <button onclick="withLoader(this, continueProcessing)()">Continue</button>
+    <span class="loader">.</span>
 
     <div class="results">
         <label for="result">Tournament result in stats format:</label>

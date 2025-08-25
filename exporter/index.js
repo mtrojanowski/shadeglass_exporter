@@ -352,9 +352,31 @@ function showInvalidateButton() {
     document.getElementById('invalidateCache').style.display = 'block';
 }
 
+// Utility to show loader and disable button during async action
+function withLoader(button, asyncFn) {
+    return async function(...args) {
+        button.disabled = true;
+        const loader = button.parentNode.querySelector('.loader');
+        loader.style.display = 'inline-block';
+
+        let frame = 0;
+        const frames = ['.', '..', '...', ''];
+        let interval = setInterval(() => {
+            loader.textContent = frames[frame];
+            frame = (frame + 1) % frames.length;
+        }, 400);
+        try {
+            await asyncFn.apply(this, args);
+        } finally {
+            button.disabled = false;
+            clearInterval(interval);
+            loader.style.display = 'none';
+        }
+    };
+}
+
 /*
 TODO:
-- make the page prettier
 - integrate with shadeglass
 - integrate with other? (championshub, other)
  */
