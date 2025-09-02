@@ -13,6 +13,11 @@
 <p>Export tournament data from popular TO apps to WHU Statistics data format.</p>
 <form>
     <div>
+        <label>Import source:</label>
+        <label><input type="radio" name="importSource" value="bcp" checked> BCP</label>
+        <label><input type="radio" name="importSource" value="shadeglass"> Shadeglass</label>
+    </div>
+    <div>
         <label for="token">BCP access token</label>
         <input type="text" id="token" />
     </div>

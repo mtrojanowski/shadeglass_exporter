@@ -1,3 +1,5 @@
+import * as shadeglass from './shadeglass';
+
 let eventId = '';
 let eventPlayers = {};
 
@@ -286,7 +288,10 @@ async function processData() {
         eventId = url;
     }
 
-    console.log(`Start processing for tournament ID ${eventId}`);
+    const importSource = document.querySelector('input[name="importSource"]:checked').value;
+    const accessToken = document.getElementById("token").value;
+
+    console.log(`Start processing for tournament ID ${eventId} from ${importSource}`);
 
     const eventPlayersFromCache = readCache(eventId);
 
@@ -294,9 +299,13 @@ async function processData() {
         eventPlayers = eventPlayersFromCache;
         showInvalidateButton();
     } else {
-        eventPlayers = await getPlayersData(tournamentId);
-        updateCache(eventId, eventPlayers);
+        if (importSource === 'bcp') {
+            eventPlayers = await getPlayersData(eventId);
+        } else if (importSource === 'shadeglass') {
+            eventPlayers = await shadeglass.getPlayersData(eventId, accessToken);
+        }
     }
+
 
     printPlayersTable(eventPlayers);
 
@@ -379,4 +388,5 @@ function withLoader(button, asyncFn) {
 TODO:
 - integrate with shadeglass
 - integrate with other? (championshub, other)
+- ideally, don't cache names of players. Add a button that can download names if needed.
  */

@@ -90,3 +90,5 @@ const bcpPlayersEndpoint = '/v1/players?limit=100&eventId='
 const bcpDecklistBaseUrl = '/v1/armylists/'
 
 const bcpFrontBase = 'https://bestcoastpairings.com'
+
+export { bcpFactionMap, deckMap, bcpBaseUrl, bcpPairingsEndpoint, bcpPlayersEndpoint, bcpDecklistBaseUrl, bcpFrontBase }
