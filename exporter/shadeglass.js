@@ -1,4 +1,4 @@
-import parseDecks from "./decksParser";
+import parseDecks from "./decksParser.js";
 
 const shadeglassGetDataUrl = 'https://shadeglass.eu/pl/api/ApiTournament/GetDetails';
 
@@ -55,7 +55,7 @@ const warbandMap = {
     Ephilims: "Ephilim's Pandaemonium",
     headsmens: "Headsmen's Curse",
     Skabbiks: "Skabbik's Plaguepack",
-    ThricefoldDiscord: 'The Thricefold Discord',
+    ThricefoldDiscord: 'Thricefold Discord',
     CyrenisRazors: "Cyreni's Razors",
     Daggoks: "Daggok's Stab-ladz",
     Zondaras: "Zondara's Gravebreakers",

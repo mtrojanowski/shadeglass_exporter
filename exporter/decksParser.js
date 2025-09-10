@@ -1,4 +1,4 @@
-import { deckMap } from './consts'
+import { deckMap } from './consts.js'
 
 export default function parseDecks(deckUrl) {
     const cards = deckUrl.split('?deck=')[1].split(',');

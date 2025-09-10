@@ -1,4 +1,6 @@
-import * as shadeglass from './shadeglass';
+import * as shadeglass from './shadeglass.js';
+
+import { bcpFactionMap, deckMap, bcpBaseUrl, bcpPairingsEndpoint, bcpPlayersEndpoint, bcpDecklistBaseUrl, bcpFrontBase } from './consts.js';
 
 let eventId = '';
 let eventPlayers = {};
@@ -383,6 +385,11 @@ function withLoader(button, asyncFn) {
         }
     };
 }
+
+window.withLoader = withLoader;
+window.processData = processData;
+window.continueProcessing = continueProcessing;
+window.invalidateCacheForCurrentEvent = invalidateCacheForCurrentEvent;
 
 /*
 TODO:
