@@ -68,7 +68,9 @@ const bcpFactionMap = {
     "Jaws of Itzl": 'Jaws of Itzl',
     "Borgit's Beastgrabbaz": "Borgit's Beastgrabbaz",
     'Knives of the Crone': 'Knives of the Crone',
-    "Kamandora's Blades": "Kamandora's Blades"
+    "Kamandora's Blades": "Kamandora's Blades",
+    "Kurnoth's Heralds": "Kurnoth's Heralds",
+    "Blood of the Bull": "Blood of the Bull"
 }
 
 // These are the abbreviations used by underworldsdb in their deck sharing URL
@@ -81,7 +83,9 @@ const deckMap = {
     'EK': 'Edge of the Knife',
     'RF': 'Reckless Fury',
     'RS': 'Realmstone Raiders',
-    'RG': 'Raging Slayers'
+    'RG': 'Raging Slayers',
+    'DY': 'Deadly Synergy',
+    'HG': 'Hunting Grounds'
 }
 
 const bcpBaseUrl = 'https://newprod-api.bestcoastpairings.com'
