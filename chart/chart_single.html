@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deck Pair Bar Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #chart-container {
+            position: relative;
+            width: 1000px;
+            height: 500px;
+        }
+        .icon-overlay {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            z-index: 10;
+        }
+        .icon-left {
+            transform: translateY(10px);
+        }
+        .icon-right {
+            transform: translateY(-10px);
+        }
+    </style>
+</head>
+<body>
+
+<div id="chart-container">
+    <canvas id="deckChart"></canvas>
+</div>
+
+<script>
+    const values = [13, 11, 8, 4, 4, 3, 1, 0];
+
+    const labels = [
+        "Blazing Assault",
+        "Countdown to Cataclysm",
+        "Pillage and Plunder",
+        "Reckless Fury",
+        "Edge of the Knife",
+        "Emberstone Sentinels",
+        "Realmstone Raiders",
+        "Wrack and Ruin"
+    ];
+
+    const ctx = document.getElementById('deckChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Deck Pairs',
+                data: values,
+                backgroundColor: Chart.helpers.color('#4e79a7').alpha(0.8).rgbString()
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 16
+                }
+            }
+        }
+    });
+
+    // Icon pairs per label
+    const iconMap = {
+        "Countdown to Cataclysm + Blazing Assault": ["countdown-to-cataclysm-rivals-deck-icon.png", "blazing-assault-rivals-deck-icon.png"],
+        "Countdown to Cataclysm + Pillage and Plunder": ["countdown-to-cataclysm-rivals-deck-icon.png", "pillage-and-plunder-rivals-deck-icon.png"],
+        "Pillage and Plunder + Emberstone Sentinels": ["pillage-and-plunder-rivals-deck-icon.png", "emberstone-sentinels-rivals-deck-icon.png"],
+        "Blazing Assault + Reckless Fury": ["blazing-assault-rivals-deck-icon.png", "reckless-fury-rivals-deck-icon.png"],
+        "Blazing Assault + Edge of the Knife": ["blazing-assault-rivals-deck-icon.png", "edge-of-the-knife-rivals-deck-icon.png"],
+        "Pillage and Plunder + Blazing Assault": ["pillage-and-plunder-rivals-deck-icon.png", "blazing-assault-rivals-deck-icon.png"],
+        "Pillage and Plunder + Edge of the Knife": ["pillage-and-plunder-rivals-deck-icon.png", "edge-of-the-knife-rivals-deck-icon.png"],
+        "Blazing Assault + Emberstone Sentinels": ["blazing-assault-rivals-deck-icon.png", "emberstone-sentinels-rivals-deck-icon.png"],
+        "Reckless Fury + Edge of the Knife": ["reckless-fury-rivals-deck-icon.png", "edge-of-the-knife-rivals-deck-icon.png"],
+        "Reckless Fury + Realmstone Raiders": ["reckless-fury-rivals-deck-icon.png", "realmstone-raiders-rivals-deck-icon.png"],
+        "Countdown to Cataclysm": ["countdown-to-cataclysm-rivals-deck-icon.png"],
+        "Pillage and Plunder": ["pillage-and-plunder-rivals-deck-icon.png"],
+        "Emberstone Sentinels": ["emberstone-sentinels-rivals-deck-icon.png"],
+        "Blazing Assault": ["blazing-assault-rivals-deck-icon.png"],
+        "Edge of the Knife": ["edge-of-the-knife-rivals-deck-icon.png"],
+        "Reckless Fury": ["reckless-fury-rivals-deck-icon.png"],
+        "Realmstone Raiders": ["realmstone-raiders-rivals-deck-icon.png"],
+        "Wrack and Ruin": ["wrack-and-ruin-rivals-deck-icon.png"]
+    };
+
+    function placeIcons() {
+        const canvas = document.getElementById('deckChart');
+        const container = document.getElementById('chart-container');
+        const rect = canvas.getBoundingClientRect();
+
+        const chartArea = chart.chartArea;
+        const meta = chart.getDatasetMeta(0);
+
+        labels.forEach((label, i) => {
+            const x = meta.data[i].x;
+            const y = chart.scales.y.getPixelForValue(3);
+
+            const iconSrc  = iconMap[label];
+
+            const icon = document.createElement("img");
+            icon.src = iconSrc;
+            icon.className = "icon-overlay icon-left";
+            icon.style.left = `${x - 20}px`;
+            icon.style.top = `${y}px`;
+
+            container.appendChild(icon);
+        });
+    }
+
+    // Wait a bit to allow chart to render, then overlay icons
+    setTimeout(placeIcons, 300);
+</script>
+
+</body>
+</html>

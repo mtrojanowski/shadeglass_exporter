@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deck Pair Bar Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #chart-container {
+            position: relative;
+            width: 1000px;
+            height: 500px;
+        }
+        .icon-overlay {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            z-index: 10;
+        }
+        .icon-left {
+            transform: translateY(10px);
+        }
+        .icon-right {
+            transform: translateY(-10px);
+        }
+    </style>
+</head>
+<body>
+
+<div id="chart-container">
+    <canvas id="deckChart"></canvas>
+</div>
+
+<script>
+    const values = [4, 3, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+    const labels = [
+        "Emberwatch",
+        "Thricefold Discord",
+        "Zarbag’s Gitz",
+        "Blackpowder's Buccaneers",
+        "Borgit's Beastgrabbaz",
+        "Grandfather's Gardeners",
+        "Grymwatch",
+        "Headsmen's Curse",
+        "Ironsoul’s Condemnors",
+        "Jaws of Itzl",
+        "Knives of the Crone",
+        "Mollog's Mob",
+        "Morgok's Krushas",
+        "Myari's Purifiers",
+    ];
+
+    const ctx = document.getElementById('deckChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Deck Pairs',
+                data: values,
+                backgroundColor: Chart.helpers.color('#4e79a7').alpha(0.8).rgbString()
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 6
+                }
+            }
+        }
+    });
+
+    // Icon pairs per label
+    const iconMap = {
+        "Blackpowder's Buccaneers": 'warband_icons/blackpowders-buccaneers-icon.png',
+        "Borgit's Beastgrabbaz": 'warband_icons/borgits-beastgrabbaz-icon.png',
+        'brethren-of-the-bolt': 'warband_icons/brethren-of-the-bolt-icon.png',
+        'cyrenis-razors': 'warband_icons/cyrenis-razors-icon.png',
+        'da-kunnin-krew': 'warband_icons/da-kunnin-krew-icon.png',
+        'daggoks-stab-ladz': 'warband_icons/daggoks-stab-ladz-icon.png',
+        'ephilims-pandaemonium': 'warband_icons/ephilims-pandaemonium-icon.png',
+        'gorechosen-of-dromm': 'warband_icons/gorechosen-of-dromm-icon.png',
+        "Grandfather's Gardeners": 'warband_icons/grandfathers-gardeners-icon.png',
+        'grinkraks-looncourt': 'warband_icons/grinkraks-looncourt-icon.png',
+        'hexbanes-hunters': 'warband_icons/hexbanes-hunters-icon.png',
+        "Ironsoul’s Condemnors": 'warband_icons/ironsouls-condemners-icon.png',
+        "Jaws of Itzl": 'warband_icons/jaws-of-itzl-icon.png',
+        'kainans-reapers': 'warband_icons/kainans-reapers-icon.png',
+        'khagras-ravagers': 'warband_icons/khagras-ravagers-icon.png',
+        "Knives of the Crone": 'warband_icons/knives-of-the-crone-icon.png',
+        "Mollog's Mob": 'warband_icons/mollogs-mob-icon.png',
+        "Morgok's Krushas": 'warband_icons/morgoks-krushas-icon.png',
+        "Myari's Purifiers": 'warband_icons/myaris-purifiers-icon.png',
+        'sepulchral-guard': 'warband_icons/sepulchral-guard-icon.png',
+        'spiteclaws-swarm': 'warband_icons/spiteclaws-swarm-icon.png',
+        'the-crimson-court': 'warband_icons/the-crimson-court-icon.png',
+        'the-dread-pageant': 'warband_icons/the-dread-pageant-icon.png',
+        "Emberwatch": 'warband_icons/the-emberwatch-icon.png',
+        'the-farstriders': 'warband_icons/the-farstriders-icon.png',
+        "Grymwatch": 'warband_icons/the-grymwatch-icon.png',
+        "Headsmen's Curse": 'warband_icons/the-headsmens-curse-icon.png',
+        'the-skinnerkin': 'warband_icons/the-skinnerkin-icon.png',
+        "Thricefold Discord": 'warband_icons/the-thricefold-discord-icon.png',
+        'thorns-of-the-briar-queen': 'warband_icons/thorns-of-the-briar-queen-icon.png',
+        'thundriks-profiteers': 'warband_icons/thundriks-profiteers-icon.png',
+        'yltharis-guardians': 'warband_icons/yltharis-guardians-icon.png',
+        "Zarbag’s Gitz": 'warband_icons/zarbags-gitz-icon.png',
+        'zikkits-tunnelpack': 'warband_icons/zikkits-tunnelpack-icon.png',
+        'zondaras-gravebreakers': 'warband_icons/zondaras-gravebreakers-icon.png'
+    };
+
+    function placeIcons() {
+        const canvas = document.getElementById('deckChart');
+        const container = document.getElementById('chart-container');
+        const rect = canvas.getBoundingClientRect();
+
+        const chartArea = chart.chartArea;
+        const meta = chart.getDatasetMeta(0);
+
+        labels.forEach((label, i) => {
+            const x = meta.data[i].x;
+            const y = chart.scales.y.getPixelForValue(1);
+
+            const iconSrc  = iconMap[label];
+
+            const icon = document.createElement("img");
+            icon.src = iconSrc;
+            icon.className = "icon-overlay icon-left";
+            icon.style.left = `${x - 20}px`;
+            icon.style.top = `${y}px`;
+
+            container.appendChild(icon);
+        });
+    }
+
+    // Wait a bit to allow chart to render, then overlay icons
+    setTimeout(placeIcons, 300);
+</script>
+
+</body>
+</html>

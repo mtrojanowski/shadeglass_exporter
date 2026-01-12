@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Deck Pair List</title>
+        <style>
+            .styled-table {
+                border-collapse: collapse;
+                margin: 25px 0;
+                font-size: 1.1em;
+                font-family: sans-serif;
+                min-width: 400px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            }
+
+            .styled-table thead tr {
+                background-color: #009879;
+                color: #ffffff;
+                text-align: left;
+            }
+
+            .styled-table th,
+            .styled-table td {
+                padding: 12px 15px;
+            }
+
+            .styled-table tbody tr {
+                border-bottom: 1px solid #dddddd;
+            }
+
+            .styled-table tbody tr:nth-child(even) {
+                background-color: #f3f3f3;
+            }
+
+            .styled-table tbody tr:last-of-type {
+                border-bottom: 2px solid #009879;
+            }
+
+            .styled-table td {
+                vertical-align: middle
+            }
+            .icon {
+                width: 30px;
+                height: 30px;
+            }
+
+            .icon-text-wrapper {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .deck-link {
+                color: #555;
+            }
+
+        </style>
+        <script>
+            const data =
+                [[1,"Zarbag's Gitz","Countdown to Cataclysm","Pillage and Plunder","https://www.underworldsdb.com/shared.php?deck=0,CC7,PL8,PL10,CC4,PL2,CC1,CC11,PL4,PL1,PL12,PL11,PL6,PL5,CC3,PL21,CC19,CC24,PL31,PL28,CC32,PL13,PL18,PL22,CC20,CC17,CC27,CC30,PL24,PL17,PL23,PL27,PL25,CC22,CC16&format=nemesis&warband=ZarbagsGitz"],[2,"Zarbag's Gitz","Pillage and Plunder","Countdown to Cataclysm","https://www.underworldsdb.com/shared.php?deck=0,PL1,PL2,PL4,PL5,PL8,PL10,PL11,PL12,PL13,PL17,PL18,PL22,PL23,PL24,PL25,PL27,PL28,PL31,CC1,CC3,CC7,CC17,CC19,CC20,CC22,CC30,CC32,CC16,CC13,PL29,PL6,PL7,CC24&warband=Universal&format=nemesis&deckname=Zarbagi%20Delve/Cat"],[3,"Jaws of Itzl","Blazing Assault","Countdown to Cataclysm","https://www.underworldsdb.com/shared.php?deck=0,BL3,BL4,BL5,BL7,BL8,BL14,BL15,BL16,BL17,BL19,BL22,BL24,BL25,BL26,BL27,BL28,BL29,BL32,CC1,CC2,CC3,CC4,CC6,CC7,CC11,CC12,CC16,CC17,CC18,CC20,CC22,CC24,CC28,CC30,CC31&warband=Universal&format=nemesis"],[4,"Mollog's Mob","Blazing Assault","Countdown to Cataclysm","https://www.underworldsdb.com/shared.php?deck=0,BL2,BL3,BL4,BL5,BL7,BL8,CC1,CC4,CC2,CC6,CC7,BL16,BL15,BL17,CC20,CC22,BL13,BL22,BL19,CC17,CC32,CC31,CC28,BL29,BL32,BL28,BL31,CC24,BL26,BL25,BL21,CC11&format=nemesis&deckname=Smutny%20Mollog&warband=Universal"],[5,"Emberwatch","Emberstone Sentinels","Pillage and Plunder","https://www.underworldsdb.com/shared.php?deck=0,ES5,PL7,PL8,PL11,ES4,ES2,ES11,ES12,PL1,PL2,PL3,PL4,PL5,ES14,ES17,ES19,ES20,ES22,PL14,PL18,PL19,PL22,ES16,ES24,ES25,ES26,ES27,ES28,ES29,ES30,ES31,ES32,PL27,PL28&format=nemesis&warband=TheEmberwatch"],[6,"Thricefold Discord","Blazing Assault","Edge of the Knife","https://www.underworldsdb.com/shared.php?deck=0,BL3,BL4,BL5,BL7,BL8,BL10,EK20,EK19,EK14,BL14,BL15,BL17,BL18,BL20,BL22,BL23,BL24,BL25,BL26,BL28,BL29,BL31,BL32,EK23,EK30,BL21,EK10,EK2,EK4,EK8,EK1,EK6,EK7&warband=Universal"],[7,"Headsmen's Curse","Blazing Assault","Reckless Fury","https://www.underworldsdb.com/shared.php?deck=0,BL2,BL3,BL4,BL5,BL7,BL8,RF3,RF6,RF5,RF2,RF11,RF1,RF8,BL17,BL16,BL15,BL14,BL13,BL20,BL22,RF13,RF20,RF15,RF17,RF29,BL23,BL24,BL25,BL26,BL27,BL28,BL31,BL32,RF28,RF24&format=nemesis&warband=Universal"],[8,"Blackpowder's Buccaneers","Blazing Assault","Pillage and Plunder","https://www.underworldsdb.com/shared.php?deck=0,BL7,BL8,PL5,PL6,PL2,BL2,PL10,BL3,PL4,PL1,PL3,PL8,BL5,BL4,PL27,PL15,BL18,BL16,BL15,BL14,BL21,BL24,PL28,BL13,BL28,BL26,PL22,BL29,BL31,BL32,BL27,BL20,BL22,BL25&format=nemesis&warband=BlackpowdersBuccaneers"],[9,"Ironsoul's Condemners","Reckless Fury","Realmstone Raiders","https://www.underworldsdb.com/shared.php?deck=0,RF2,RF3,RF5,RF11,RS2,RS10,RS12,RS1,RS8,RS9,RS11,RF6,RF15,RF20,RF14,RS21,RF22,RS22,RS20,RS18,RS17,RS15,RF24,RS31,RS30,RS28,RS23,RS24,RS25,RS26,RS27,RS32&warband=IronsoulsCondemners&format=nemesis"],[10,"Borgit's Beastgrabbaz","Pillage and Plunder","Countdown to Cataclysm","https://www.underworldsdb.com/shared.php?deck=0,PL8,PL10,PL11,CC7,CC11,PL12,PL1,PL3,PL4,PL5,PL6,CC1,CC4,PL13,PL15,PL18,PL22,CC15,CC17,CC16,CC20,CC22,CC19,PL23,PL25,PL27,PL28,PL31,CC27,CC30,CC31,CC32,PL26&format=nemesis&deckname=borgirtournament&warband=BorgitsBeastgrabbaz"],[11,"Thricefold Discord","Blazing Assault","Countdown to Cataclysm","https://www.underworldsdb.com/shared.php?deck=0,BL3,BL4,BL5,BL7,BL8,BL16,BL15,BL22,BL24,BL25,BL26,BL28,BL31,BL32,BL2,BL23,CC28,CC11,CC1,CC2,CC6,CC22,BL29,BL20,CC16,CC31,CC18,CC20,BL17,CC8,BL10,CC17&format=nemesis&warband=TheThricefoldDiscord"],[12,"Emberwatch","Blazing Assault","Edge of the Knife","https://www.underworldsdb.com/shared.php?deck=0,BL2,BL3,BL4,BL5,BL7,BL8,BL10,BL14,BL13,BL15,BL16,BL20,BL21,BL22,BL32,BL31,BL29,BL27,BL26,BL25,BL24,EK10,EK8,EK4,EK1,EK2,EK6,EK13,EK17,EK30,EK29,EK23,EK20&warband=TheEmberwatch&format=nemesis&deckname=emberwach%20TEMPERT"],[13,"Grandfather's Gardeners","Emberstone Sentinels","Pillage and Plunder",null],[14,"Grymwatch","Pillage and Plunder","Countdown to Cataclysm","https://www.underworldsdb.com/shared.php?deck=0,PL8,CC11,CC12,PL10,CC7,CC4,CC3,PL1,PL5,PL4,PL2,CC1,CC22,CC20,CC19,CC17,CC13,PL22,PL13,CC27,PL31,PL28,CC31,CC30,CC32,PL27,PL25,PL24,PL23,PL19,PL12,CC16,CC18&warband=TheGrymwatch&format=nemesis"],[15,"Blackpowder's Buccaneers","Reckless Fury","Edge of the Knife","https://www.underworldsdb.com/shared.php?deck=0,RF3,RF6,RF9,EK1,EK3,EK6,RF1,RF2,RF5,RF8,RF11,EK4,EK8,EK10,RF14,RF15,RF13,RF20,RF22,EK13,EK16,EK17,EK19,EK21,RF28,RF29,RF30,EK23,EK24,EK26,EK27,EK29,EK30,EK32&warband=BlackpowdersBuccaneers&format=nemesis"],[16,"Emberwatch","Blazing Assault","Countdown to Cataclysm",null],[17,"Thricefold Discord","Blazing Assault","Countdown to Cataclysm","https://www.underworldsdb.com/shared.php?deck=0,BL31,BL16,BL32,BL22,BL26,BL29,BL17,BL5,CC1,BL4,BL7,CC4,CC11,CC20,BL25,BL8,CC28,CC22,BL24,BL15,BL2,CC26,CC16,CC6,BL28,CC18,BL9,BL23,CC8,CC2,BL3,BL20,CC19&warband=Universal&format=nemesis"],[18,"Zarbag's Gitz","Pillage and Plunder","Edge of the Knife","https://www.underworldsdb.com/shared.php?deck=0,PL1,PL2,PL4,PL5,PL6,PL8,PL10,PL11,PL12,PL16,PL17,PL18,PL21,PL22,PL23,PL24,PL25,PL27,PL28,PL30,PL31,EK30,EK29,EK26,EK23,EK21,EK19,EK18,EK17,EK14,EK13,EK10,EK8,EK4,EK1,EK6&warband=Universal&format=nemesis"],[19,"Morgok's Krushas","Blazing Assault","Reckless Fury",null],[20,"Knives of the Crone","Blazing Assault","Countdown to Cataclysm","https://www.underworldsdb.com/shared.php?deck=0,BL2,BL3,BL4,BL5,BL7,BL8,BL13,BL14,BL16,BL15,BL20,BL22,BL23,BL24,BL25,BL29,BL26,BL31,BL32,CC6,CC7,CC11,CC3,CC2,CC1,CC19,CC20,CC16,CC13,CC32,CC28,CC26&warband=Universal"],[21,"Myari's Purifiers","Blazing Assault","Emberstone Sentinels",null],[22,"Emberwatch","Countdown to Cataclysm","Blazing Assault",null],[23,"Morgok's Krushas","Blazing Assault","Reckless Fury",null],[24,"Sepulchral Guard","Pillage and Plunder","Edge of the Knife","https://www.underworldsdb.com/shared.php?deck=0,PL1,PL2,PL5,PL8,PL10,PL11,PL13,PL16,PL17,PL22,PL23,PL25,PL27,PL28,PL31,PL4,EK4,EK6,EK7,EK8,EK14,EK16,EK17,EK21,EK26,EK29,EK30,EK10,PL21,EK25,PL6,EK18,EK23,PL7,PL24&warband=SepulchralGuard&format=nemesis"]]
+
+
+
+
+            const warbandIconsMap = {
+                "Blackpowder's Buccaneers": 'warband_icons/blackpowders-buccaneers-icon.png',
+                "Borgit's Beastgrabbaz": 'warband_icons/borgits-beastgrabbaz-icon.png',
+                'brethren-of-the-bolt': 'warband_icons/brethren-of-the-bolt-icon.png',
+                'cyrenis-razors': 'warband_icons/cyrenis-razors-icon.png',
+                'da-kunnin-krew': 'warband_icons/da-kunnin-krew-icon.png',
+                'daggoks-stab-ladz': 'warband_icons/daggoks-stab-ladz-icon.png',
+                'ephilims-pandaemonium': 'warband_icons/ephilims-pandaemonium-icon.png',
+                'gorechosen-of-dromm': 'warband_icons/gorechosen-of-dromm-icon.png',
+                "Grandfather's Gardeners": 'warband_icons/grandfathers-gardeners-icon.png',
+                'grinkraks-looncourt': 'warband_icons/grinkraks-looncourt-icon.png',
+                'hexbanes-hunters': 'warband_icons/hexbanes-hunters-icon.png',
+                "Ironsoul's Condemnors": 'warband_icons/ironsouls-condemners-icon.png',
+                "Jaws of Itzl": 'warband_icons/jaws-of-itzl-icon.png',
+                'kainans-reapers': 'warband_icons/kainans-reapers-icon.png',
+                'khagras-ravagers': 'warband_icons/khagras-ravagers-icon.png',
+                "Knives of the Crone": 'warband_icons/knives-of-the-crone-icon.png',
+                "Mollog's Mob": 'warband_icons/mollogs-mob-icon.png',
+                "Morgok's Krushas": 'warband_icons/morgoks-krushas-icon.png',
+                "Myari's Purifiers": 'warband_icons/myaris-purifiers-icon.png',
+                'sepulchral-guard': 'warband_icons/sepulchral-guard-icon.png',
+                'spiteclaws-swarm': 'warband_icons/spiteclaws-swarm-icon.png',
+                'the-crimson-court': 'warband_icons/the-crimson-court-icon.png',
+                'the-dread-pageant': 'warband_icons/the-dread-pageant-icon.png',
+                "Emberwatch": 'warband_icons/the-emberwatch-icon.png',
+                'the-farstriders': 'warband_icons/the-farstriders-icon.png',
+                "Grymwatch": 'warband_icons/the-grymwatch-icon.png',
+                "Headsmen's Curse": 'warband_icons/the-headsmens-curse-icon.png',
+                'the-skinnerkin': 'warband_icons/the-skinnerkin-icon.png',
+                "Thricefold Discord": 'warband_icons/the-thricefold-discord-icon.png',
+                'thorns-of-the-briar-queen': 'warband_icons/thorns-of-the-briar-queen-icon.png',
+                'thundriks-profiteers': 'warband_icons/thundriks-profiteers-icon.png',
+                'yltharis-guardians': 'warband_icons/yltharis-guardians-icon.png',
+                "Zarbag's Gitz": 'warband_icons/zarbags-gitz-icon.png',
+                'zikkits-tunnelpack': 'warband_icons/zikkits-tunnelpack-icon.png',
+                'zondaras-gravebreakers': 'warband_icons/zondaras-gravebreakers-icon.png'
+            };
+
+            const deckIconsMap = {
+                "Countdown to Cataclysm": ["countdown-to-cataclysm-rivals-deck-icon.png"],
+                "Pillage and Plunder": ["pillage-and-plunder-rivals-deck-icon.png"],
+                "Emberstone Sentinels": ["emberstone-sentinels-rivals-deck-icon.png"],
+                "Blazing Assault": ["blazing-assault-rivals-deck-icon.png"],
+                "Edge of the Knife": ["edge-of-the-knife-rivals-deck-icon.png"],
+                "Reckless Fury": ["reckless-fury-rivals-deck-icon.png"],
+                "Realmstone Raiders": ["realmstone-raiders-rivals-deck-icon.png"],
+                "Wrack and Ruin": ["wrack-and-ruin-rivals-deck-icon.png"]
+            };
+            function populateTable() {
+                const tableBody = document.getElementById('resultsTable');
+
+
+                data.forEach(entry => {
+                    const row = document.createElement('tr');
+
+                    // Create and append the first cell
+                    const placeCell = document.createElement('td');
+                    placeCell.textContent = entry[0];
+                    row.appendChild(placeCell);
+
+                    // Create and append the second cell (Warband)
+                    const warbandCell = document.createElement('td');
+                    const warbandWrapper = document.createElement('div');
+                    warbandWrapper.className = 'icon-text-wrapper';
+                    const warbandIcon = document.createElement('img');
+                    warbandIcon.src = warbandIconsMap[entry[1]];
+                    warbandIcon.className = 'icon';
+                    warbandWrapper.appendChild(warbandIcon);
+                    warbandWrapper.appendChild(document.createTextNode(entry[1]));
+                    warbandCell.appendChild(warbandWrapper);
+                    row.appendChild(warbandCell);
+
+                    // Create and append the third cell (Rivals Deck 1)
+                    const deck1Cell = document.createElement('td');
+                    const deck1Wrapper = document.createElement('div');
+                    deck1Wrapper.className = 'icon-text-wrapper';
+                    const deck1Icon = document.createElement('img');
+                    deck1Icon.src = deckIconsMap[entry[2]];
+                    deck1Icon.className = 'icon';
+                    deck1Wrapper.appendChild(deck1Icon);
+                    deck1Wrapper.appendChild(document.createTextNode(entry[2]));
+                    deck1Cell.appendChild(deck1Wrapper);
+                    row.appendChild(deck1Cell);
+
+                    // Create and append the fourth cell (Rivals Deck 2)
+                    const deck2Cell = document.createElement('td');
+                    const deck2Wrapper = document.createElement('div');
+                    deck2Wrapper.className = 'icon-text-wrapper';
+                    const deck2Icon = document.createElement('img');
+                    deck2Icon.src = deckIconsMap[entry[3]];
+                    deck2Icon.className = 'icon';
+                    deck2Wrapper.appendChild(deck2Icon);
+                    deck2Wrapper.appendChild(document.createTextNode(entry[3]));
+                    deck2Cell.appendChild(deck2Wrapper);
+                    row.appendChild(deck2Cell);
+
+                    // Create and append the fifth cell with a link to the deck, if there's a deck URL
+                    if(entry[4]) {
+                        const deckCell = document.createElement('td');
+                        const deckLink = document.createElement('a');
+                        deckLink.href = entry[4];
+                        deckLink.textContent = 'View Deck';
+                        deckLink.className = 'deck-link';
+                        deckLink.target = '_blank';
+                        deckCell.appendChild(deckLink);
+                        row.appendChild(deckCell);
+                    }
+
+                    // Append the row to the table
+                    tableBody.appendChild(row);
+                });
+            }
+
+            setTimeout(populateTable, 1000);
+        </script>
+    </head>
+    <body>
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>Place</th>
+                <th>Warband</th>
+                <th>Rivals Deck 1</th>
+                <th>Rivals Deck 2</th>
+                <th>Deck</th>
+            </tr>
+            </thead>
+            <tbody id="resultsTable">
+            </tbody>
+        </table>
+    </body>
+</html>

@@ -13,7 +13,7 @@ async function fetchBCPData(path) {
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${bcpAccessToken}`,
+            'Authorization': `Bearer ${bcpAccessToken}`, // TODO - recognize whether the pasted token is with `Bearer `
             'Client-Id': 'web-app'
         }
     });
