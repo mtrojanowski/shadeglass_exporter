@@ -29,6 +29,13 @@
         <span class="loader">.</span>
     </div>
 </form>
+
+<div id="googleSheetsControls" style="margin: 16px 0;">
+    <button id="googleAuthBtn" type="button" onclick="(() => handleGoogleAuth())()">Connect Google Sheets</button>
+    <span class="loader" style="display:none;">.</span>
+    <input id="sheetIdInput" type="text" placeholder="Google Sheet ID" style="margin-left:10px; width: 250px;" />
+</div>
+
 <div id="invalidateCache" style="display: none">
     <button id="invalidateCacheButton" onclick="withLoader(this, invalidateCacheForCurrentEvent)()">Refresh event data</button>
     <span class="loader">.</span>
@@ -54,12 +61,6 @@
     <button onclick="withLoader(this, continueProcessing)()">Continue</button>
     <span class="loader">.</span>
 
-    <div class="results">
-        <label for="result">Tournament result in stats format:</label>
-        <textarea id="result">
-
-        </textarea>
-    </div>
 </div>
 </div>
 </body>

@@ -326,14 +326,12 @@ async function continueProcessing() {
         }
     }
 
-    const separator = ','
-
-    const textareaResult = document.getElementById('result');
-    textareaResult.value = '';
-
-    for (const result of results) {
-        textareaResult.value += `${result['player1Faction']}${separator}${result['player1Deck1']}${separator}${result['player1Deck2']}${separator}${result['gamesWon']}${separator}${result['gamesLost']}${separator}0${separator}${result['player2Faction']}${separator}${result['player2Deck1']}${separator}${result['player2Deck2']}\n`;
+    const sheetId = document.getElementById('sheetIdInput')?.value;
+    if (!sheetId) {
+        alert('Please provide a Google Sheet ID.');
+        return;
     }
+    await writeResultsToGoogleSheet(sheetId, results);
 }
 
 function updateCache(eventId, eventData) {
@@ -386,13 +384,126 @@ function withLoader(button, asyncFn) {
     };
 }
 
+// Google Sheets API integration setup
+// TODO — maybe have input fields in the form for this?
+const GOOGLE_CLIENT_ID = '';
+const GOOGLE_API_KEY = '';
+const GOOGLE_DISCOVERY_DOCS = [
+  'https://sheets.googleapis.com/$discovery/rest?version=v4'
+];
+const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+let googleAccessToken = null;
+let tokenClient = null;
+
+// Load GIS and gapi client libraries
+function loadGoogleApis() {
+    return new Promise((resolve, reject) => {
+        let loaded = 0;
+        function checkDone() { loaded++; if (loaded === 2) resolve(); }
+        // Load gapi client
+        if (window.gapi) {
+            window.gapi.load('client', checkDone);
+        } else {
+            const gapiScript = document.createElement('script');
+            gapiScript.src = 'https://apis.google.com/js/api.js';
+            gapiScript.onload = () => window.gapi.load('client', checkDone);
+            gapiScript.onerror = reject;
+            document.head.appendChild(gapiScript);
+        }
+        // Load GIS
+        if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+            checkDone();
+        } else {
+            const gisScript = document.createElement('script');
+            gisScript.src = 'https://accounts.google.com/gsi/client';
+            gisScript.onload = checkDone;
+            gisScript.onerror = reject;
+            document.head.appendChild(gisScript);
+        }
+    });
+}
+
+async function initGoogleClients() {
+    await loadGoogleApis();
+    await window.gapi.client.init({
+        apiKey: GOOGLE_API_KEY,
+        discoveryDocs: GOOGLE_DISCOVERY_DOCS,
+    });
+    if (!tokenClient) {
+        tokenClient = window.google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: GOOGLE_SCOPES,
+            callback: (tokenResponse) => {
+                googleAccessToken = tokenResponse.access_token;
+            },
+        });
+    }
+}
+
+async function handleGoogleAuth() {
+    await initGoogleClients();
+    return new Promise((resolve, reject) => {
+        tokenClient.callback = (tokenResponse) => {
+            if (tokenResponse.error) {
+                alert('Google Auth failed: ' + tokenResponse.error);
+                reject(tokenResponse.error);
+            } else {
+                googleAccessToken = tokenResponse.access_token;
+                window.gapi.client.setToken({ access_token: googleAccessToken });
+                alert('Google Sheets connected!');
+                resolve();
+            }
+        };
+        tokenClient.requestAccessToken();
+    });
+}
+
+async function writeResultsToGoogleSheet(sheetId, results) {
+    await initGoogleClients();
+    if (!googleAccessToken) {
+        await handleGoogleAuth();
+    } else {
+        window.gapi.client.setToken({ access_token: googleAccessToken });
+    }
+    // Prepare data for Sheets API
+    const values = results.map(result => [
+        result['player1Faction'],
+        result['player1Deck1'],
+        result['player1Deck2'],
+        result['gamesWon'],
+        result['gamesLost'],
+        0,
+        result['player2Faction'],
+        result['player2Deck1'],
+        result['player2Deck2']
+    ]);
+    const body = {
+        values: values
+    };
+    try {
+        await window.gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId: sheetId,
+            range: 'Arkusz1', // TODO: make sheet name configurable
+            valueInputOption: 'RAW',
+            insertDataOption: 'INSERT_ROWS',
+            resource: body
+        });
+        alert('Results written to Google Sheet!');
+    } catch (err) {
+        alert('Failed to write to Google Sheet: ' + err.message);
+    }
+}
+
 window.withLoader = withLoader;
 window.processData = processData;
 window.continueProcessing = continueProcessing;
 window.invalidateCacheForCurrentEvent = invalidateCacheForCurrentEvent;
+window.handleGoogleAuth = handleGoogleAuth;
 
 /*
 TODO:
+- address todos from the code
+- add a scrollable log div, where logs are written instead of the console
 - integrate with shadeglass
 - integrate with other? (championshub, other)
 - ideally, don't cache names of players. Add a button that can download names if needed.
