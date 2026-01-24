@@ -120,3 +120,12 @@ textarea {
     margin-left: 8px;
     letter-spacing: 2px;
 }
+
+.google-sheets-input {
+    margin-left:10px;
+    width: 250px;
+}
+
+.google-sheets-details {
+    margin-top: 0.5em;
+}

@@ -10,6 +10,22 @@
 <div class="container">
 <h1>WHU Data Exporter</h1>
 <p>Export tournament data from popular TO apps to WHU Statistics data format.</p>
+
+    <div id="googleSheetsControls" style="margin: 16px 0;">
+        <button id="googleAuthBtn" type="button" onclick="(() => handleGoogleAuth())()">Connect Google Sheets</button>
+        <span class="loader" style="display:none;">.</span>
+        <details class="google-sheets-details">
+            <summary>Google Sheets Identifiers</summary>
+            <label for="sheetIdInput">Google Sheet ID</label>
+            <input id="sheetIdInput" type="text" class="google-sheets-input" onchange="((event) => updateSheetId(event))(event)" />
+            <label for="submissionsSheetName">Submissions Sheet</label>
+            <input id="submissionsSheetName" type="text" class="google-sheets-input" onchange="((event) => updateSubmissionSheetName(event))(event)" />
+            <label for="eventsSheetName">Events Sheet</label>
+            <input id="eventsSheetName" type="text" class="google-sheets-input" onchange="((event) => updateEventsSheetName(event))(event)" />
+            <label for="podiumSheetName">Podium Sheet</label>
+            <input id="podiumSheetName" type="text" class="google-sheets-input" onchange="((event) => updatePodiumSheetName(event))(event)" />
+        </details>
+    </div>
 <form>
     <div>
         <label>Import source:</label>
@@ -29,12 +45,6 @@
         <span class="loader">.</span>
     </div>
 </form>
-
-<div id="googleSheetsControls" style="margin: 16px 0;">
-    <button id="googleAuthBtn" type="button" onclick="(() => handleGoogleAuth())()">Connect Google Sheets</button>
-    <span class="loader" style="display:none;">.</span>
-    <input id="sheetIdInput" type="text" placeholder="Google Sheet ID" style="margin-left:10px; width: 250px;" />
-</div>
 
 <div id="invalidateCache" style="display: none">
     <button id="invalidateCacheButton" onclick="withLoader(this, invalidateCacheForCurrentEvent)()">Refresh event data</button>

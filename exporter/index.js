@@ -5,6 +5,17 @@ import { bcpFactionMap, deckMap, bcpBaseUrl, bcpPairingsEndpoint, bcpPlayersEndp
 let eventId = '';
 let eventPlayers = {};
 
+let googleSheetID = 'aaa';
+let submissionsSheetName = 'Submissions';
+let eventsSheetName = 'Events & Tags';
+let podiumSheetName = 'Podium Data';
+
+document.getElementById('sheetIdInput').value = googleSheetID;
+document.getElementById('submissionsSheetName').value = submissionsSheetName;
+document.getElementById('eventsSheetName').value = eventsSheetName;
+document.getElementById('podiumSheetName').value = podiumSheetName;
+
+
 async function fetchBCPData(path) {
     const bcpAccessToken = document.getElementById("token").value;
 
@@ -326,7 +337,7 @@ async function continueProcessing() {
         }
     }
 
-    const sheetId = document.getElementById('sheetIdInput')?.value;
+    const sheetId = googleSheetID.value;
     if (!sheetId) {
         alert('Please provide a Google Sheet ID.');
         return;
@@ -494,14 +505,52 @@ async function writeResultsToGoogleSheet(sheetId, results) {
     }
 }
 
+function updateSheetId(event) {
+    // TODO — maybe use localstorage?
+    googleSheetID = event.target.value;
+}
+
+function updateSubmissionSheetName(event) {
+    // TODO — maybe use localstorage?
+    submissionsSheetName = event.target.value;
+}
+
+function updateEventsSheetName(event) {
+    // TODO — maybe use localstorage?
+    eventsSheetName = event.target.value;
+}
+
+function updatePodiumSheetName(event) {
+    // TODO — maybe use localstorage?
+    podiumSheetName = event.target.value;
+}
+
+async function fillGoogleDocsData() {
+    // 1. Append game result data in the Submission sheet, starting from column C
+    // 2. Set the date in column B
+    // 3. Add timestamp to column A
+    // 4. Fill column F with tag
+    // 5. Add the event to the events sheet (date of the tournament, tag, name, no of players, qualifier, link, country code)
+    // 6. Add data for podium (date of the tournament, warband, deck, deck, 1st, 2nd, 3rd, players, event tag)
+
+}
+
+
 window.withLoader = withLoader;
 window.processData = processData;
 window.continueProcessing = continueProcessing;
 window.invalidateCacheForCurrentEvent = invalidateCacheForCurrentEvent;
 window.handleGoogleAuth = handleGoogleAuth;
+window.updateSheetId = updateSheetId;
+window.updateSubmissionSheetName = updateSubmissionSheetName;
+window.updateEventsSheetName = updateEventsSheetName;
+window.updatePodiumSheetName = updatePodiumSheetName;
 
 /*
 TODO:
+- get the event details like date and display before getting game results
+- get the tournament results for podium? Display podium players
+- propose a tag for the event and allow for editing (add a checkbox whether event was a WCW qualifier) T%-YY-MM-CC-SLUG
 - address todos from the code
 - add a scrollable log div, where logs are written instead of the console
 - integrate with shadeglass
