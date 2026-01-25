@@ -1,9 +1,13 @@
 import * as shadeglass from './shadeglass.js';
 
-import { bcpFactionMap, deckMap, bcpBaseUrl, bcpPairingsEndpoint, bcpPlayersEndpoint, bcpDecklistBaseUrl, bcpFrontBase } from './consts.js';
+import {
+    bcpFactionMap, deckMap, bcpBaseUrl, bcpPairingsEndpoint, bcpPlayersEndpoint, bcpDecklistBaseUrl, bcpFrontBase,
+    bcpTournamentDetailsEndpoint, bcpPlacingsEndpoint
+} from './consts.js';
 
 let eventId = '';
 let eventPlayers = {};
+let eventData = {};
 
 let googleSheetID = 'aaa';
 let submissionsSheetName = 'Submissions';
@@ -18,13 +22,14 @@ document.getElementById('podiumSheetName').value = podiumSheetName;
 
 async function fetchBCPData(path) {
     const bcpAccessToken = document.getElementById("token").value;
+    const authorizationHeader = bcpAccessToken.startsWith('Bearer') ? bcpAccessToken : `Bearer ${bcpAccessToken}`;
 
     const url = bcpBaseUrl + path
 
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${bcpAccessToken}`,
+            'Authorization': authorizationHeader,
             'Client-Id': 'web-app'
         }
     });
@@ -107,7 +112,7 @@ async function getTournamentData(tournamentId) {
 }
 
 async function getTournamentPlayers(tournamentId) {
-    return await fetchBCPData(bcpPlayersEndpoint + tournamentId)
+    return await fetchBCPData(bcpPlacingsEndpoint.replace('§eventId§', tournamentId))
 }
 
 async function getPlayersData(tournamentId) {
@@ -115,17 +120,22 @@ async function getPlayersData(tournamentId) {
 
     const processedPlayers = {};
 
-    for (const player of players.data) {
+    for (const player of players.active) {
         processedPlayers[player.id] = {
             id: player.id,
             name: `${player.user.firstName} ${player.user.lastName}`,
             faction: bcpFactionMap[player.faction.name], // TODO handle missing faction?
             listUrl: player.listUrl,
-            decks: await getDeckData(player.listId)
+            decks: await getDeckData(player.listId),
+            placing: player.placing
         };
     }
 
     return processedPlayers;
+}
+
+async function getEventData(tournamentId) {
+    return await fetchBCPData(bcpTournamentDetailsEndpoint.replace('§eventId§', tournamentId))
 }
 
 function printPlayersTable(players) {
@@ -133,7 +143,13 @@ function printPlayersTable(players) {
     const tbody = table.getElementsByTagName('tbody')[0];
     tbody.innerHTML = '';
 
-    for (const playerId in players) {
+    const sortedPlayerIds = Object.keys(players).sort((a, b) => {
+        const placingA = players[a].placing;
+        const placingB = players[b].placing;
+        return placingA - placingB;
+    });
+
+    for (const playerId of sortedPlayerIds) {
         const player = players[playerId];
         const row = tbody.insertRow();
         row.setAttribute('data-player-id', playerId);
@@ -145,12 +161,16 @@ function printPlayersTable(players) {
 
         // Check if this row is in edit mode
         if (player.editMode) {
+            // Placing
+            const placingCell = row.insertCell(0);
+            placingCell.textContent = player.placing;
+
             // Name cell (not editable)
-            const nameCell = row.insertCell(0);
+            const nameCell = row.insertCell(1);
             nameCell.textContent = player.name;
 
             // Faction dropdown
-            const factionCell = row.insertCell(1);
+            const factionCell = row.insertCell(2);
             const factionSelect = document.createElement('select');
             for (const key in bcpFactionMap) {
                 const option = document.createElement('option');
@@ -162,7 +182,7 @@ function printPlayersTable(players) {
             factionCell.appendChild(factionSelect);
 
             // Decklist cell (not editable)
-            const deckCell = row.insertCell(2);
+            const deckCell = row.insertCell(3);
             if (player.listUrl) {
                 const anchor = document.createElement('a');
                 anchor.href = bcpFrontBase + player.listUrl;
@@ -174,7 +194,7 @@ function printPlayersTable(players) {
             }
 
             // Decks dropdowns
-            const decksCell = row.insertCell(3);
+            const decksCell = row.insertCell(4);
             const deck1Select = document.createElement('select');
             const deck2Select = document.createElement('select');
 
@@ -210,7 +230,7 @@ function printPlayersTable(players) {
             decksCell.appendChild(deck2Select);
 
             // Save button
-            const saveCell = row.insertCell(4);
+            const saveCell = row.insertCell(5);
             const saveBtn = document.createElement('button');
             saveBtn.innerHTML = '💾'; // floppy icon
             saveBtn.title = 'Save';
@@ -220,19 +240,23 @@ function printPlayersTable(players) {
                 player.decks.deck2 = deck2Select.value;
                 delete player.editMode;
                 eventPlayers[playerId] = player;
-                updateCache(eventId, eventPlayers);
+                updatePlayersDataCache(eventId, eventPlayers);
                 printPlayersTable(eventPlayers);
             };
             saveCell.appendChild(saveBtn);
         } else {
             // Normal display mode
-            const nameCell = row.insertCell(0);
+
+            const placingCell = row.insertCell(0);
+            placingCell.textContent = player.placing;
+
+            const nameCell = row.insertCell(1);
             nameCell.textContent = player.name;
 
-            const factionCell = row.insertCell(1);
+            const factionCell = row.insertCell(2);
             factionCell.textContent = player.faction;
 
-            const deckCell = row.insertCell(2);
+            const deckCell = row.insertCell(3);
             if (player.listUrl) {
                 const anchor = document.createElement('a');
                 anchor.href = bcpFrontBase + player.listUrl;
@@ -243,7 +267,7 @@ function printPlayersTable(players) {
                 deckCell.textContent = '--decklist missing--';
             }
 
-            const decksCell = row.insertCell(3);
+            const decksCell = row.insertCell(4);
             if (player.decks[0] !== '-') {
                 decksCell.textContent = `${player.decks.deck1} + ${player.decks.deck2}`;
             } else {
@@ -251,7 +275,7 @@ function printPlayersTable(players) {
             }
 
             // Edit button
-            const editCell = row.insertCell(4);
+            const editCell = row.insertCell(5);
             const editBtn = document.createElement('button');
             editBtn.innerHTML = '✏️'; // pencil icon
             editBtn.title = 'Edit';
@@ -263,6 +287,17 @@ function printPlayersTable(players) {
             editCell.appendChild(editBtn);
         }
     }
+}
+
+function printEventDetails(eventData) {
+    document.getElementById('eventData').style.display = 'block';
+
+    document.getElementById("eventName").value = eventData['name'];
+    document.getElementById("eventCountry").value = eventData['country'];
+    document.getElementById("eventDate").value = eventData['eventDate'].substring(0, 10);
+    document.getElementById('playersNo').value = eventData['queryNumPlayers'];
+
+    document.getElementById('tag').value = '';
 }
 
 function processSingleGameResult(gameResult) {
@@ -306,7 +341,22 @@ async function processData() {
 
     console.log(`Start processing for tournament ID ${eventId} from ${importSource}`);
 
-    const eventPlayersFromCache = readCache(eventId);
+    const eventDataFromCache = getEventDataFromCache(eventId);
+
+    if (eventDataFromCache !== null) {
+        eventData = eventDataFromCache;
+        showClearCacheButton();
+    } else {
+        if (importSource === 'bcp') {
+            eventData = await getEventData(eventId);
+        } else {
+            // TODO — implement other sources
+        }
+    }
+
+    printEventDetails(eventData);
+
+    const eventPlayersFromCache = getPlayersDataFromCache(eventId);
 
     if (eventPlayersFromCache !== null) {
         eventPlayers = eventPlayersFromCache;
@@ -314,6 +364,7 @@ async function processData() {
     } else {
         if (importSource === 'bcp') {
             eventPlayers = await getPlayersData(eventId);
+            updatePlayersDataCache(eventId, eventPlayers);
         } else if (importSource === 'shadeglass') {
             eventPlayers = await shadeglass.getPlayersData(eventId, accessToken);
         }
@@ -322,7 +373,6 @@ async function processData() {
 
     printPlayersTable(eventPlayers);
 
-    document.getElementById('result').value = '';
     document.getElementById('continueProcessing').style.display = 'block';
 }
 
@@ -345,31 +395,54 @@ async function continueProcessing() {
     await writeResultsToGoogleSheet(sheetId, results);
 }
 
-function updateCache(eventId, eventData) {
+function updateCache(eventId, eventData, cacheKey) {
 
-    const rawData = window.localStorage.getItem('eventsCache') || "{}";
+    const rawData = window.localStorage.getItem(cacheKey) || "{}";
     const dataCache = JSON.parse(rawData);
 
     dataCache[eventId] = eventData;
-    window.localStorage.setItem('eventsCache', JSON.stringify(dataCache, null, 2));
+    window.localStorage.setItem(cacheKey, JSON.stringify(dataCache, null, 2));
+}
+
+function updatePlayersDataCache(eventId, data) {
+    updateCache(eventId, data, 'eventsPairings');
+}
+
+function updateEventDataCache(eventId, data) {
+    updateCache(eventId, data, 'eventsData');
 }
 
 async function invalidateCacheForCurrentEvent() {
     eventPlayers = await getPlayersData(eventId);
-    updateCache(eventId, eventPlayers);
+    updatePlayersDataCache(eventId, eventPlayers);
     printPlayersTable(eventPlayers);
 }
 
-function readCache(eventId) {
-
-    const rawData = window.localStorage.getItem('eventsCache') || "{}";
+function readCache(eventId, cacheKey) {
+    const rawData = window.localStorage.getItem(cacheKey) || "{}";
     const dataCache = JSON.parse(rawData);
 
     return dataCache[eventId] || null;
 }
 
+function getEventDataFromCache(eventId) {
+    return readCache(eventId, 'eventsData');
+}
+
+function getPlayersDataFromCache(eventId) {
+    return readCache(eventId, 'eventsPairings');
+}
+
 function showInvalidateButton() {
     document.getElementById('invalidateCache').style.display = 'block';
+}
+
+function showClearCacheButton() {
+    document.getElementById('clearCache').style.display = 'block';
+}
+
+function clearCache() {
+    window.localStorage.clear();
 }
 
 // Utility to show loader and disable button during async action
@@ -525,6 +598,42 @@ function updatePodiumSheetName(event) {
     podiumSheetName = event.target.value;
 }
 
+function proposeTag() {
+    // Get checkbox state
+    const isQualifier = document.getElementById('qualifier')?.checked;
+    // Get event date value
+    const eventDate = document.getElementById('eventDate')?.value;
+    // Get country code value
+    const countryCode = document.getElementById('countryCode')?.value?.toUpperCase();
+    // Get event name value
+    const eventName = document.getElementById('eventName')?.value;
+
+    // Prefix
+    const prefix = isQualifier ? 'TW%-' : 'T%-';
+
+    // Date formatting
+    let datePart = '';
+    if (eventDate) {
+        const dateObj = new Date(eventDate);
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth() + 1; // JS months are 0-based
+        const yearStr = String(year).slice(-2);
+        const monthStr = month < 10 ? '0' + month : String(month);
+        datePart = `${yearStr}-${monthStr}`;
+    }
+
+    // Country code
+    const countryPart = countryCode || '';
+
+    // Event name initials
+    let initials = '';
+    if (eventName) {
+        initials = eventName.split(/\s+/).map(word => word[0]?.toUpperCase() || '').join('');
+    }
+
+    document.getElementById('tag').value = `${prefix}${datePart}-${countryPart}-${initials}`;
+}
+
 async function fillGoogleDocsData() {
     // 1. Append game result data in the Submission sheet, starting from column C
     // 2. Set the date in column B
@@ -545,12 +654,15 @@ window.updateSheetId = updateSheetId;
 window.updateSubmissionSheetName = updateSubmissionSheetName;
 window.updateEventsSheetName = updateEventsSheetName;
 window.updatePodiumSheetName = updatePodiumSheetName;
+window.clearCache = clearCache;
+window.proposeTag = proposeTag;
 
 /*
 TODO:
-- get the event details like date and display before getting game results
-- get the tournament results for podium? Display podium players
-- propose a tag for the event and allow for editing (add a checkbox whether event was a WCW qualifier) T%-YY-MM-CC-SLUG
+- ~~get the event details like date and display before getting game results~~
+- ~~get the tournament results for podium? Display podium players~~
+- ~~propose a tag for the event and allow for editing (add a checkbox whether event was a WCW qualifier) T%-YY-MM-CC-NAME~~
+- try to figure out the ISO code (make a list of all ISO codes, a map of English country name —> ISO code, a map of original language country name —> ISO code) then search the entry on those lists
 - address todos from the code
 - add a scrollable log div, where logs are written instead of the console
 - integrate with shadeglass

@@ -46,14 +46,38 @@
     </div>
 </form>
 
+<div id="clearCache" style="display: none">
+    <button id="clearCacheButton" onclick="(() => clearCache())()">Clear all cached data</button>
+</div>
+
+<div id="eventData" class="eventData">
+    <h2>Event Data</h2>
+    <label for="eventName">Name</label>
+    <input type="text" id="eventName" name="eventName" />
+    <label for="eventCountry">Country</label>
+    <input type="text" id="eventCountry" name="eventCountry" />
+    <label for="countryCode">Country ISO Code</label>
+    <input type="text" id="countryCode" name="countryCode" />
+    <label for="eventDate">Date</label>
+    <input type="text" id="eventDate" name="eventDate" />
+    <label for="qualifier">Is the event a WCW Qualifier?</label>
+    <input type="checkbox" name="isQualifier" id="qualifier" /><br/>
+    <label for="playersNo">Number of players</label>
+    <input type="text" name="playersNo" id="playersNo" />
+    <label for="tag">The event tag</label>
+    <input type="text" id="tag" name="tag" />
+    <button onclick="(() => proposeTag())()">Propose tag</button>
+</div>
+
 <div id="invalidateCache" style="display: none">
-    <button id="invalidateCacheButton" onclick="withLoader(this, invalidateCacheForCurrentEvent)()">Refresh event data</button>
+    <button id="invalidateCacheButton" onclick="withLoader(this, invalidateCacheForCurrentEvent)()">Refresh pairings and players data</button>
     <span class="loader">.</span>
 </div>
 <div>
     <table id="playersTable">
         <thead>
             <tr>
+                <th>Place</th>
                 <th>Name</th>
                 <th>Faction</th>
                 <th>Decklist URL</th>

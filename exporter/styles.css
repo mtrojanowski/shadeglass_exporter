@@ -129,3 +129,11 @@ textarea {
 .google-sheets-details {
     margin-top: 0.5em;
 }
+
+.eventData {
+    display: none;
+    margin: 1em;
+    padding: 0.5em;
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+}

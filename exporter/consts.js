@@ -92,7 +92,7 @@ const bcpBaseUrl = 'https://newprod-api.bestcoastpairings.com'
 const bcpPairingsEndpoint = '/v1/pairings?limit=500&pairingType=Pairing&expand%5B%5D=player1&expand%5B%5D=player2&expand%5B%5D=player1Game&expand%5B%5D=player2Game&eventId='
 const bcpPlayersEndpoint = '/v1/players?limit=100&eventId='
 const bcpDecklistBaseUrl = '/v1/armylists/'
-const bcpTournamentDetailsEndpoint = '/v1/events/§tournamentID§?&expand%5B%5D=location'
+const bcpTournamentDetailsEndpoint = '/v1/events/§eventId§?&expand%5B%5D=location'
 const bcpPlacingsEndpoint = '/v1/events/§eventId§/players?placings=true'
 
 const bcpFrontBase = 'https://bestcoastpairings.com'
