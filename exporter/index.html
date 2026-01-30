@@ -16,14 +16,18 @@
         <span class="loader" style="display:none;">.</span>
         <details class="google-sheets-details">
             <summary>Google Sheets Identifiers</summary>
+            <label for="googleApiKey">Google API Key</label>
+            <input id="googleApiKey" type="text" class="google-sheets-input form-input" onchange="((event) => updateGoogleApiKey(event))(event)" />
+            <label for="googleClientId">Google Client ID</label>
+            <input id="googleClientId" type="text" class="google-sheets-input form-input" onchange="((event) => updateGoogleClientId(event))(event)" />
             <label for="sheetIdInput">Google Sheet ID</label>
-            <input id="sheetIdInput" type="text" class="google-sheets-input" onchange="((event) => updateSheetId(event))(event)" />
+            <input id="sheetIdInput" type="text" class="google-sheets-input form-input" onchange="((event) => updateSheetId(event))(event)" />
             <label for="submissionsSheetName">Submissions Sheet</label>
-            <input id="submissionsSheetName" type="text" class="google-sheets-input" onchange="((event) => updateSubmissionSheetName(event))(event)" />
+            <input id="submissionsSheetName" type="text" class="google-sheets-input form-input" onchange="((event) => updateSubmissionSheetName(event))(event)" />
             <label for="eventsSheetName">Events Sheet</label>
-            <input id="eventsSheetName" type="text" class="google-sheets-input" onchange="((event) => updateEventsSheetName(event))(event)" />
+            <input id="eventsSheetName" type="text" class="google-sheets-input form-input" onchange="((event) => updateEventsSheetName(event))(event)" />
             <label for="podiumSheetName">Podium Sheet</label>
-            <input id="podiumSheetName" type="text" class="google-sheets-input" onchange="((event) => updatePodiumSheetName(event))(event)" />
+            <input id="podiumSheetName" type="text" class="google-sheets-input form-input" onchange="((event) => updatePodiumSheetName(event))(event)" />
         </details>
     </div>
 <form>
@@ -34,11 +38,11 @@
     </div>
     <div>
         <label for="token">BCP access token</label>
-        <input type="text" id="token" />
+        <input type="text" id="token" class="form-input" />
     </div>
     <div>
         <label for="tournament">Input public URL for the tournament, or tournament ID</label>
-        <input type="text" id="tournament" />
+        <input type="text" id="tournament" class="form-input" />
     </div>
     <div>
         <button type="button" onclick="withLoader(this, processData)()">Process</button>
@@ -53,19 +57,19 @@
 <div id="eventData" class="eventData">
     <h2>Event Data</h2>
     <label for="eventName">Name</label>
-    <input type="text" id="eventName" name="eventName" />
+    <input type="text" id="eventName" name="eventName" class="form-input" />
     <label for="eventCountry">Country</label>
-    <input type="text" id="eventCountry" name="eventCountry" />
+    <input type="text" id="eventCountry" name="eventCountry" class="form-input" />
     <label for="countryCode">Country ISO Code</label>
-    <input type="text" id="countryCode" name="countryCode" />
+    <input type="text" id="countryCode" name="countryCode" class="form-input" />
     <label for="eventDate">Date</label>
-    <input type="text" id="eventDate" name="eventDate" />
+    <input type="text" id="eventDate" name="eventDate" class="form-input" />
     <label for="qualifier">Is the event a WCW Qualifier?</label>
     <input type="checkbox" name="isQualifier" id="qualifier" /><br/>
     <label for="playersNo">Number of players</label>
-    <input type="text" name="playersNo" id="playersNo" />
+    <input type="text" name="playersNo" id="playersNo" class="form-input" />
     <label for="tag">The event tag</label>
-    <input type="text" id="tag" name="tag" />
+    <input type="text" id="tag" name="tag" class="form-input" />
     <button onclick="(() => proposeTag())()">Propose tag</button>
 </div>
 

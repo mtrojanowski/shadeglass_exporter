@@ -9,7 +9,7 @@ let eventId = '';
 let eventPlayers = {};
 let eventData = {};
 
-let googleSheetID = 'aaa';
+let googleSheetID = '1_gnOmf1Qy1TySV5Im-Va7IHoWDDLRrg6MFdI75fZda4';
 let submissionsSheetName = 'Submissions';
 let eventsSheetName = 'Events & Tags';
 let podiumSheetName = 'Podium Data';
@@ -115,19 +115,30 @@ async function getTournamentPlayers(tournamentId) {
     return await fetchBCPData(bcpPlacingsEndpoint.replace('§eventId§', tournamentId))
 }
 
+async function getTournamentPlayersFromRoster(tournamentId) {
+    return await fetchBCPData(bcpPlayersEndpoint + tournamentId);
+}
+
 async function getPlayersData(tournamentId) {
-    const players = await getTournamentPlayers(tournamentId);
+    const playersFromPlacings = await getTournamentPlayers(tournamentId);
+
+    let players = playersFromPlacings.active;
+
+    if (!players || players.length === 0) {
+       const playersFromRoster = await getTournamentPlayersFromRoster(tournamentId);
+       players = playersFromRoster.data;
+    }
 
     const processedPlayers = {};
 
-    for (const player of players.active) {
+    for (const player of players) {
         processedPlayers[player.id] = {
             id: player.id,
             name: `${player.user.firstName} ${player.user.lastName}`,
             faction: bcpFactionMap[player.faction.name], // TODO handle missing faction?
             listUrl: player.listUrl,
             decks: await getDeckData(player.listId),
-            placing: player.placing
+            placing: player.placing || 0
         };
     }
 
@@ -163,7 +174,11 @@ function printPlayersTable(players) {
         if (player.editMode) {
             // Placing
             const placingCell = row.insertCell(0);
-            placingCell.textContent = player.placing;
+            const placingInput = document.createElement('input');
+            placingInput.value = player.placing;
+            placingInput.type = 'text';
+            placingInput.classList.add('placings-input');
+            placingCell.appendChild(placingInput);
 
             // Name cell (not editable)
             const nameCell = row.insertCell(1);
@@ -238,6 +253,7 @@ function printPlayersTable(players) {
                 player.faction = factionSelect.value;
                 player.decks.deck1 = deck1Select.value;
                 player.decks.deck2 = deck2Select.value;
+                player.placing = placingInput.value;
                 delete player.editMode;
                 eventPlayers[playerId] = player;
                 updatePlayersDataCache(eventId, eventPlayers);
@@ -289,6 +305,12 @@ function printPlayersTable(players) {
     }
 }
 
+function clearPlayersTable() {
+    const table = document.getElementById('playersTable');
+    const tbody = table.getElementsByTagName('tbody')[0];
+    tbody.innerHTML = '';
+}
+
 function printEventDetails(eventData) {
     document.getElementById('eventData').style.display = 'block';
 
@@ -325,6 +347,7 @@ function processSingleGameResult(gameResult) {
 }
 
 async function processData() {
+    clearPlayersTable();
 
     const url = document.getElementById('tournament').value;
 
@@ -387,12 +410,12 @@ async function continueProcessing() {
         }
     }
 
-    const sheetId = googleSheetID.value;
-    if (!sheetId) {
+    if (!googleSheetID) {
         alert('Please provide a Google Sheet ID.');
         return;
     }
-    await writeResultsToGoogleSheet(sheetId, results);
+
+    await fillGoogleDocsData(results);
 }
 
 function updateCache(eventId, eventData, cacheKey) {
@@ -469,9 +492,8 @@ function withLoader(button, asyncFn) {
 }
 
 // Google Sheets API integration setup
-// TODO — maybe have input fields in the form for this?
-const GOOGLE_CLIENT_ID = '';
-const GOOGLE_API_KEY = '';
+let GOOGLE_CLIENT_ID = document.getElementById('googleClientId').value;
+let GOOGLE_API_KEY = document.getElementById('googleApiKey').value;
 const GOOGLE_DISCOVERY_DOCS = [
   'https://sheets.googleapis.com/$discovery/rest?version=v4'
 ];
@@ -598,13 +620,23 @@ function updatePodiumSheetName(event) {
     podiumSheetName = event.target.value;
 }
 
+function updateGoogleApiKey(event) {
+    // TODO — maybe use localstorage?
+    GOOGLE_API_KEY = event.target.value;
+}
+
+function updateGoogleClientId(event) {
+    // TODO — maybe use localstorage?
+    GOOGLE_CLIENT_ID = event.target.value;
+}
+
 function proposeTag() {
     // Get checkbox state
     const isQualifier = document.getElementById('qualifier')?.checked;
     // Get event date value
     const eventDate = document.getElementById('eventDate')?.value;
     // Get country code value
-    const countryCode = document.getElementById('countryCode')?.value?.toUpperCase();
+    const countryCode = document.getElementById('countryCode')?.value;
     // Get event name value
     const eventName = document.getElementById('eventName')?.value;
 
@@ -628,20 +660,139 @@ function proposeTag() {
     // Event name initials
     let initials = '';
     if (eventName) {
-        initials = eventName.split(/\s+/).map(word => word[0]?.toUpperCase() || '').join('');
+        initials = eventName.split(/\s+/).map(word => {
+            if (/^\d+$/.test(word)) {
+                return word;
+            }
+
+            return word[0].toUpperCase();
+        }).join('');
     }
 
     document.getElementById('tag').value = `${prefix}${datePart}-${countryPart}-${initials}`;
 }
 
-async function fillGoogleDocsData() {
-    // 1. Append game result data in the Submission sheet, starting from column C
-    // 2. Set the date in column B
-    // 3. Add timestamp to column A
-    // 4. Fill column F with tag
-    // 5. Add the event to the events sheet (date of the tournament, tag, name, no of players, qualifier, link, country code)
-    // 6. Add data for podium (date of the tournament, warband, deck, deck, 1st, 2nd, 3rd, players, event tag)
+async function fillGoogleDocsData(results) {
+    await initGoogleClients();
+    if (!googleAccessToken) {
+        await handleGoogleAuth();
+    } else {
+        window.gapi.client.setToken({ access_token: googleAccessToken });
+    }
 
+    const eventDate = document.getElementById('eventDate')?.value
+    const tag = document.getElementById('tag').value;
+
+    // 1. Append game result data in the Submission sheet, starting from column C
+    const values = results.map(result => [
+        Date.now(),
+        eventDate,
+        result['player1Faction'],
+        result['player1Deck1'],
+        result['player1Deck2'],
+        result['gamesWon'],
+        result['gamesLost'],
+        0,
+        result['player2Faction'],
+        result['player2Deck1'],
+        result['player2Deck2'],
+        tag
+    ]);
+    const body = {
+        values: values
+    };
+    try {
+        await window.gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId: googleSheetID,
+            range: submissionsSheetName,
+            valueInputOption: 'RAW',
+            insertDataOption: 'INSERT_ROWS',
+            resource: body
+        });
+    } catch (err) {
+        console.log('Error writing games results to Google Sheets', err)
+    }
+
+    // 2. Append the event to the events sheet (date of the tournament, tag, name, no of players, qualifier, link, country code)
+
+    const eventName = document.getElementById('eventName')?.value;
+    const playersNo = document.getElementById('playersNo')?.value;
+    const isQualifier = document.getElementById('qualifier')?.checked;
+    const tournamentLink = document.getElementById('tournament').value;
+    const countryCode = document.getElementById('countryCode')?.value;
+
+    const eventDataBody = {
+        values: [[
+            eventDate,
+            tag,
+            eventName,
+            playersNo,
+            isQualifier ? 'Yes' : 'No',
+            tournamentLink,
+            countryCode
+        ]]
+    };
+
+    try {
+        await window.gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId: googleSheetID,
+            range: eventsSheetName,
+            valueInputOption: 'RAW',
+            insertDataOption: 'INSERT_ROWS',
+            resource: eventDataBody
+        });
+    } catch (err) {
+        console.log('Error writing event data to Google Sheets', err)
+    }
+
+    // 3. Append data for podium (date of the tournament, warband, deck, deck, 1st, 2nd, 3rd, players, event tag)
+
+    const podiumData = {};
+    let podiumPlayersFound = 0;
+    for (const playerId in eventPlayers) {
+        const player = eventPlayers[playerId];
+
+        console.log(`Checking ${playerId} for podium...`);
+
+        if (player.placing === 1) {
+            podiumData['1'] = player;
+            podiumPlayersFound++;
+        } else if (player.placing === 2) {
+            podiumData['2'] = player;
+            podiumPlayersFound++;
+        } else if (player.placing === 3) {
+            podiumData['3'] = player;
+            podiumPlayersFound++;
+        }
+
+        if (podiumPlayersFound === 3) {
+            console.log('Found all podium players');
+            break;
+        }
+    }
+
+    const podiumBody = {
+        values: [
+            [eventDate, podiumData['1'].faction, podiumData['1'].decks.deck1, podiumData['1'].decks.deck2, 1, 0, 0, playersNo, tag],
+            [eventDate, podiumData['2'].faction, podiumData['2'].decks.deck1, podiumData['2'].decks.deck2, 0, 1, 0, playersNo, tag],
+            [eventDate, podiumData['3'].faction, podiumData['3'].decks.deck1, podiumData['3'].decks.deck2, 0, 0, 1, playersNo, tag],
+        ]
+    };
+
+    try {
+        await window.gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId: googleSheetID,
+            range: podiumSheetName,
+            valueInputOption: 'RAW',
+            insertDataOption: 'INSERT_ROWS',
+            resource: podiumBody
+        });
+    } catch (err) {
+        console.log('Error writing podium data to Google Sheets', err)
+    }
+
+    console.log('Finished writing data to Google Sheets');
+    alert('Finished writing data to Google Sheets');
 }
 
 
@@ -656,6 +807,8 @@ window.updateEventsSheetName = updateEventsSheetName;
 window.updatePodiumSheetName = updatePodiumSheetName;
 window.clearCache = clearCache;
 window.proposeTag = proposeTag;
+window.updateGoogleApiKey = updateGoogleApiKey;
+window.updateGoogleClientId = updateGoogleClientId;
 
 /*
 TODO:
