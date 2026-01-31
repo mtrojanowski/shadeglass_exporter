@@ -4,6 +4,7 @@ import {
     bcpFactionMap, deckMap, bcpBaseUrl, bcpPairingsEndpoint, bcpPlayersEndpoint, bcpDecklistBaseUrl, bcpFrontBase,
     bcpTournamentDetailsEndpoint, bcpPlacingsEndpoint
 } from './consts.js';
+import {countries} from "./countries.js";
 
 let eventId = '';
 let eventPlayers = {};
@@ -311,11 +312,26 @@ function clearPlayersTable() {
     tbody.innerHTML = '';
 }
 
+function clearEventDetailsForm() {
+    document.getElementById('eventData').style.display = 'hidden';
+
+    document.getElementById("eventName").value = '';
+    document.getElementById("eventCountry").value = '';
+    document.getElementById("eventDate").value = '';
+    document.getElementById('playersNo').value = '';
+    document.getElementById('countryCode').value = '';
+    document.getElementById('tag').value = '';
+}
+
 function printEventDetails(eventData) {
     document.getElementById('eventData').style.display = 'block';
 
     document.getElementById("eventName").value = eventData['name'];
     document.getElementById("eventCountry").value = eventData['country'];
+    const potentialCountryCode = countries[eventData['country']];
+    if (potentialCountryCode !== undefined) {
+        document.getElementById('countryCode').value = potentialCountryCode;
+    }
     document.getElementById("eventDate").value = eventData['eventDate'].substring(0, 10);
     document.getElementById('playersNo').value = eventData['queryNumPlayers'];
 
@@ -348,6 +364,7 @@ function processSingleGameResult(gameResult) {
 
 async function processData() {
     clearPlayersTable();
+    clearEventDetailsForm();
 
     const url = document.getElementById('tournament').value;
 
