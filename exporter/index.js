@@ -176,7 +176,7 @@ function printPlayersTable(players) {
             // Placing
             const placingCell = row.insertCell(0);
             const placingInput = document.createElement('input');
-            placingInput.value = player.placing;
+            placingInput.value = player.placing.toString();
             placingInput.type = 'text';
             placingInput.classList.add('placings-input');
             placingCell.appendChild(placingInput);
@@ -226,12 +226,12 @@ function printPlayersTable(players) {
                 const option1 = document.createElement('option');
                 option1.value = deckName;
                 option1.textContent = deckName;
-                if (player.decks.deck1 === key) option1.selected = true;
+                if (player.decks.deck1 === deckName) option1.selected = true;
                 deck1Select.appendChild(option1);
                 const option2 = document.createElement('option');
                 option2.value = deckName;
                 option2.textContent = deckName;
-                if (player.decks.deck2 === key) option2.selected = true;
+                if (player.decks.deck2 === deckName) option2.selected = true;
                 deck2Select.appendChild(option2);
             }
 
@@ -254,7 +254,7 @@ function printPlayersTable(players) {
                 player.faction = factionSelect.value;
                 player.decks.deck1 = deck1Select.value;
                 player.decks.deck2 = deck2Select.value;
-                player.placing = placingInput.value;
+                player.placing = parseInt(placingInput.value);
                 delete player.editMode;
                 eventPlayers[playerId] = player;
                 updatePlayersDataCache(eventId, eventPlayers);
@@ -265,7 +265,7 @@ function printPlayersTable(players) {
             // Normal display mode
 
             const placingCell = row.insertCell(0);
-            placingCell.textContent = player.placing;
+            placingCell.textContent = player.placing.toString();
 
             const nameCell = row.insertCell(1);
             nameCell.textContent = player.name;
@@ -768,8 +768,6 @@ async function fillGoogleDocsData(results) {
     let podiumPlayersFound = 0;
     for (const playerId in eventPlayers) {
         const player = eventPlayers[playerId];
-
-        console.log(`Checking ${playerId} for podium...`);
 
         if (player.placing === 1) {
             podiumData['1'] = player;
