@@ -83,11 +83,13 @@ const deckMap = {
 }
 
 async function fetchData(tournamentId, token) {
+    const authorizationHeader = token.startsWith('Bearer') ? token : `Bearer ${token}`;
+
     return await fetch(shadeglassGetDataUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': authorizationHeader
         },
         body: JSON.stringify({ EntityGuid: tournamentId })
     });

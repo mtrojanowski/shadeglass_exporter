@@ -26,7 +26,6 @@ input[type="text"] {
     font-size: 1em;
     margin-top: 4px;
     margin-bottom: 12px;
-    width: 100%;
     box-sizing: border-box;
 }
 button {
@@ -119,4 +118,29 @@ textarea {
     color: #888;
     margin-left: 8px;
     letter-spacing: 2px;
+}
+
+.google-sheets-input {
+    margin-left:10px;
+    width: 250px;
+}
+
+.google-sheets-details {
+    margin-top: 0.5em;
+}
+
+.eventData {
+    display: none;
+    margin: 1em;
+    padding: 0.5em;
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+}
+
+.placings-input {
+    width: 50px;
+}
+
+.form-input {
+    width: 100%;
 }
