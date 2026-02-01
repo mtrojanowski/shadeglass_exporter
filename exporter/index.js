@@ -697,13 +697,18 @@ async function fillGoogleDocsData(results) {
         window.gapi.client.setToken({ access_token: googleAccessToken });
     }
 
-    const eventDate = document.getElementById('eventDate')?.value
+    const eventDate = new Date(document.getElementById('eventDate')?.value)
     const tag = document.getElementById('tag').value;
+
+    const currentDate = new Date();
+    const formattedTimestamp = `${currentDate.getUTCMonth()}/${currentDate.getUTCDay()}/${currentDate.getUTCFullYear()} ${currentDate.getUTCHours()}:${currentDate.getUTCMinutes()}:${currentDate.getUTCSeconds()}`;
+
+    const formattedEventDate = `${eventDate.getMonth()}/${eventDate.getDay()}/${eventDate.getFullYear()}`;
 
     // 1. Append game result data in the Submission sheet, starting from column C
     const values = results.map(result => [
-        Date.now(),
-        eventDate,
+        formattedTimestamp,
+        formattedEventDate,
         result['player1Faction'],
         result['player1Deck1'],
         result['player1Deck2'],
@@ -737,16 +742,20 @@ async function fillGoogleDocsData(results) {
     const isQualifier = document.getElementById('qualifier')?.checked;
     const tournamentLink = document.getElementById('tournament').value;
     const countryCode = document.getElementById('countryCode')?.value;
+    const contributor = document.getElementById('contributor')?.value;
+    const comment = document.getElementById('comment')?.value;
 
     const eventDataBody = {
         values: [[
-            eventDate,
+            formattedEventDate,
             tag,
             eventName,
             playersNo,
             isQualifier ? 'Yes' : 'No',
             tournamentLink,
-            countryCode
+            countryCode,
+            contributor,
+            comment
         ]]
     };
 
@@ -788,9 +797,9 @@ async function fillGoogleDocsData(results) {
 
     const podiumBody = {
         values: [
-            [eventDate, podiumData['1'].faction, podiumData['1'].decks.deck1, podiumData['1'].decks.deck2, 1, 0, 0, playersNo, tag],
-            [eventDate, podiumData['2'].faction, podiumData['2'].decks.deck1, podiumData['2'].decks.deck2, 0, 1, 0, playersNo, tag],
-            [eventDate, podiumData['3'].faction, podiumData['3'].decks.deck1, podiumData['3'].decks.deck2, 0, 0, 1, playersNo, tag],
+            [formattedEventDate, podiumData['1'].faction, podiumData['1'].decks.deck1, podiumData['1'].decks.deck2, 1, 0, 0, playersNo, tag],
+            [formattedEventDate, podiumData['2'].faction, podiumData['2'].decks.deck1, podiumData['2'].decks.deck2, 0, 1, 0, playersNo, tag],
+            [formattedEventDate, podiumData['3'].faction, podiumData['3'].decks.deck1, podiumData['3'].decks.deck2, 0, 0, 1, playersNo, tag],
         ]
     };
 
@@ -827,10 +836,7 @@ window.updateGoogleClientId = updateGoogleClientId;
 
 /*
 TODO:
-- ~~get the event details like date and display before getting game results~~
-- ~~get the tournament results for podium? Display podium players~~
-- ~~propose a tag for the event and allow for editing (add a checkbox whether event was a WCW qualifier) T%-YY-MM-CC-NAME~~
-- try to figure out the ISO code (make a list of all ISO codes, a map of English country name —> ISO code, a map of original language country name —> ISO code) then search the entry on those lists
+
 - address todos from the code
 - add a scrollable log div, where logs are written instead of the console
 - integrate with shadeglass
