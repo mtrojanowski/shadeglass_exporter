@@ -10,7 +10,7 @@ let eventId = '';
 let eventPlayers = {};
 let eventData = {};
 
-let googleSheetID = '1_gnOmf1Qy1TySV5Im-Va7IHoWDDLRrg6MFdI75fZda4';
+let googleSheetID = '1R3tSVvyxg6A8Ib0NbCeKDb3ITytb-DMtPDXv5NfLjK0';
 let submissionsSheetName = 'Submissions';
 let eventsSheetName = 'Events & Tags';
 let podiumSheetName = 'Podium Data';
@@ -697,13 +697,15 @@ async function fillGoogleDocsData(results) {
         window.gapi.client.setToken({ access_token: googleAccessToken });
     }
 
-    const eventDate = new Date(document.getElementById('eventDate')?.value)
+    const eventDate = new Date(document.getElementById('eventDate')?.value);
     const tag = document.getElementById('tag').value;
 
     const currentDate = new Date();
-    const formattedTimestamp = `${currentDate.getUTCMonth()}/${currentDate.getUTCDay()}/${currentDate.getUTCFullYear()} ${currentDate.getUTCHours()}:${currentDate.getUTCMinutes()}:${currentDate.getUTCSeconds()}`;
+    const trailingZeroMinutes = currentDate.getUTCMinutes() < 10 ? '0' : '';
+    const trailingZeroSeconds = currentDate.getUTCSeconds() < 10 ? '0' : '';
+    const formattedTimestamp = `${currentDate.getUTCMonth() + 1}/${currentDate.getUTCDate()}/${currentDate.getUTCFullYear()} ${currentDate.getUTCHours()}:${trailingZeroMinutes}${currentDate.getUTCMinutes()}:${trailingZeroSeconds}${currentDate.getUTCSeconds()}`;
 
-    const formattedEventDate = `${eventDate.getMonth()}/${eventDate.getDay()}/${eventDate.getFullYear()}`;
+    const formattedEventDate = `${eventDate.getUTCMonth()+1}/${eventDate.getDate()}/${eventDate.getFullYear()}`;
 
     // 1. Append game result data in the Submission sheet, starting from column C
     const values = results.map(result => [
@@ -727,7 +729,7 @@ async function fillGoogleDocsData(results) {
         await window.gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: googleSheetID,
             range: submissionsSheetName,
-            valueInputOption: 'RAW',
+            valueInputOption: 'USER_ENTERED',
             insertDataOption: 'INSERT_ROWS',
             resource: body
         });
@@ -763,7 +765,7 @@ async function fillGoogleDocsData(results) {
         await window.gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: googleSheetID,
             range: eventsSheetName,
-            valueInputOption: 'RAW',
+            valueInputOption: 'USER_ENTERED',
             insertDataOption: 'INSERT_ROWS',
             resource: eventDataBody
         });
@@ -807,7 +809,7 @@ async function fillGoogleDocsData(results) {
         await window.gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: googleSheetID,
             range: podiumSheetName,
-            valueInputOption: 'RAW',
+            valueInputOption: 'USER_ENTERED',
             insertDataOption: 'INSERT_ROWS',
             resource: podiumBody
         });

@@ -68,16 +68,16 @@
     <input type="checkbox" name="isQualifier" id="qualifier" /><br/>
     <label for="playersNo">Number of players</label>
     <input type="text" name="playersNo" id="playersNo" class="form-input" />
+    <button onclick="(() => proposeTag())()">Propose tag</button><br/>
     <label for="tag">The event tag</label>
     <input type="text" id="tag" name="tag" class="form-input" />
-    <button onclick="(() => proposeTag())()">Propose tag</button>
     <label for="contributor">Contributor</label>
     <input type="text" name="contributor" id="contributor" class="form-input" />
     <label for="comment">Comment</label>
     <input type="text" name="comment" id="comment" class="form-input" />
 </div>
 
-<div id="invalidateCache" style="display: none">
+<div id="invalidateCache" style="display: none" class="invalidate-cache">
     <button id="invalidateCacheButton" onclick="withLoader(this, invalidateCacheForCurrentEvent)()">Refresh pairings and players data</button>
     <span class="loader">.</span>
 </div>

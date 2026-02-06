@@ -144,3 +144,7 @@ textarea {
 .form-input {
     width: 100%;
 }
+
+.invalidate-cache {
+    text-align: right;
+}
