@@ -219,7 +219,11 @@ function printPlayersTable(players) {
             emptyOption.value = 'Unknown';
             emptyOption.textContent = '-';
             deck1Select.appendChild(emptyOption);
-            deck2Select.appendChild(emptyOption);
+
+            const emptyOption2 = document.createElement('option');
+            emptyOption2.textContent = '-';
+            emptyOption2.value = 'Unknown';
+            deck2Select.appendChild(emptyOption2);
 
             for (const key in deckMap) {
                 const deckName = deckMap[key];
@@ -344,18 +348,15 @@ function processSingleGameResult(gameResult) {
         const player1Data = eventPlayers[gameResult['player1']['id']]
         const player2Data = eventPlayers[gameResult['player2']['id']]
 
-        // Skip result if there are no deck data for a player
-        if (player1Data.decks.deck1 !== '-' && player2Data.decks.deck1 !== '-') {
-            return {
-                player1Faction: player1Data.faction,
-                player1Deck1: player1Data.decks.deck1,
-                player1Deck2: player1Data.decks.deck2,
-                gamesWon: gameResult['metaData']['in-p1-numberOfWins'] || 0,
-                gamesLost: gameResult['metaData']['in-p2-numberOfWins'] || 0,
-                player2Faction: player2Data.faction,
-                player2Deck1: player2Data.decks.deck1,
-                player2Deck2: player2Data.decks.deck2
-            }
+        return {
+            player1Faction: player1Data.faction,
+            player1Deck1: player1Data.decks.deck1,
+            player1Deck2: player1Data.decks.deck2,
+            gamesWon: gameResult['metaData']['in-p1-numberOfWins'] || 0,
+            gamesLost: gameResult['metaData']['in-p2-numberOfWins'] || 0,
+            player2Faction: player2Data.faction,
+            player2Deck1: player2Data.decks.deck1,
+            player2Deck2: player2Data.decks.deck2
         }
     } else {
         // console.log('Missing data for this match: ' + JSON.stringify(gameResult))
