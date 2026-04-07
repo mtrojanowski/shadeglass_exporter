@@ -840,6 +840,7 @@ window.updateGoogleClientId = updateGoogleClientId;
 /*
 TODO:
 
+- If there are no placings in the tournament results, try to get them from this URL: https://www.bestcoastpairings.com/truncated/event/yrLcQCibzVSm?active_tab=placings&embed=false&league=tNFTL8f0syqR
 - address todos from the code
 - add a scrollable log div, where logs are written instead of the console
 - integrate with shadeglass

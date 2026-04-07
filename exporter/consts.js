@@ -70,7 +70,8 @@ const bcpFactionMap = {
     'Knives of the Crone': 'Knives of the Crone',
     "Kamandora's Blades": "Kamandora's Blades",
     "Kurnoth's Heralds": "Kurnoth's Heralds",
-    "Blood of the Bull": "Blood of the Bull"
+    "Blood of the Bull": "Blood of the Bull",
+    "Thanatek's Tithe": "Thanatek's Tithe",
 }
 
 // These are the abbreviations used by underworldsdb in their deck sharing URL
@@ -85,7 +86,8 @@ const deckMap = {
     'RS': 'Realmstone Raiders',
     'RG': 'Raging Slayers',
     'DY': 'Deadly Synergy',
-    'HG': 'Hunting Grounds'
+    'HG': 'Hunting Grounds',
+    NP: 'Nexus of Power',
 }
 
 const bcpBaseUrl = 'https://newprod-api.bestcoastpairings.com'

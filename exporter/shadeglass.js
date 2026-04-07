@@ -68,6 +68,9 @@ const warbandMap = {
     'borgits-beastgrabbaz': "Borgit's Beastgrabbaz",
     'knives-of-the-crone': "Knives of the Crone",
     'kamandoras-blades': "Kamandora's Blades",
+    kurnothsheralds: "Kurnoth's Heralds",
+    bloodofthebull: 'Blood of the Bull',
+    'thanateks-tithe': "Thanatek's Tithe",
 }
 
 const deckMap = {
@@ -80,6 +83,8 @@ const deckMap = {
     '25a951a2-aff4-4b91-87ca-86ea07d2a886': 'Realmstone Raiders',
     'c2d5bcb2-9c10-4748-991c-de6e6d8250cb': 'Reckless Fury',
     '9512d471-ae4c-4eae-8768-ad1ba3cab9e1': 'Wrack and Ruin',
+    "231e85f5-ec23-47f5-b9d5-536b1077b4b4": "Hunting Grounds",
+    "917367e6-7e55-407c-b1cd-2aa503e11fee": "Deadly Synergy",
 }
 
 async function fetchData(tournamentId, token) {
